@@ -1,4 +1,6 @@
 import { useParams } from 'react-router-dom'
+import Title from '../components/Title'
+import TeamMembers from '../components/TeamMembers'
 
 export default function TeamDetail() {
   const { teamSlug } = useParams()
@@ -9,8 +11,8 @@ export default function TeamDetail() {
       .join(' ') || ''
   return (
     <div>
-      <h1 className="text-2xl font-semibold text-gray-900">{name} Team</h1>
-      <p>Welcome to the {name} team page.</p>
+      <Title title={name} />
+      <TeamMembers />
     </div>
   )
 }

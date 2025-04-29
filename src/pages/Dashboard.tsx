@@ -1,8 +1,11 @@
+import Feed from "../components/Feed";
+import Title from "../components/Title";
+
 export default function Dashboard() {
   return (
     <div>
-      <h1 className="text-2xl font-semibold text-gray-900">Dashboard</h1>
-      <p>Welcome to the Dashboard page.</p>
+      <Title title="Dashboard" description="See what happened lately" />
+      <Feed />
     </div>
   )
 }
