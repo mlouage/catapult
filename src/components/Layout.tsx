@@ -1,5 +1,7 @@
-import { NavLink, Outlet } from 'react-router-dom'
-import { useState } from 'react'
+import { NavLink, Outlet, Navigate } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { useMsal } from '@azure/msal-react'
+import { loginRequest } from '../authConfig'
 import { Menu, MenuButton, MenuItems, MenuItem, Dialog, DialogBackdrop, DialogPanel, TransitionChild } from '@headlessui/react'
 import { HomeIcon, UsersIcon, FolderIcon, CalendarIcon, DocumentDuplicateIcon, ChartPieIcon, Cog6ToothIcon, BellIcon, Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline'
 import { ChevronDownIcon, MagnifyingGlassIcon } from '@heroicons/react/20/solid'
@@ -30,6 +32,46 @@ const userNavigation = [
 
 export default function Layout() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const { instance, accounts } = useMsal();
+  const account = accounts[0];
+  const [user, setUser] = useState<{ name: string; email: string } | null>(null);
+  const [photo, setPhoto] = useState<string | null>(null);
+
+  // Fetch user profile and photo from Microsoft Graph
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const response = await instance.acquireTokenSilent({
+          ...loginRequest,
+          account,
+        });
+        const headers = new Headers();
+        headers.append("Authorization", `Bearer ${response.accessToken}`);
+        // Fetch user profile
+        const profileRes = await fetch("https://graph.microsoft.com/v1.0/me", { headers });
+        if (profileRes.ok) {
+          const profileData = await profileRes.json();
+          setUser({
+            name: profileData.displayName,
+            email: profileData.mail || profileData.userPrincipalName,
+          });
+        }
+        // Fetch profile photo
+        const photoRes = await fetch("https://graph.microsoft.com/v1.0/me/photo/$value", { headers });
+        if (photoRes.ok) {
+          const blob = await photoRes.blob();
+          setPhoto(URL.createObjectURL(blob));
+        }
+      } catch (error) {
+        console.error("Error fetching profile: ", error);
+      }
+    };
+    fetchProfile();
+  }, [account, instance]);
+  // Redirect to login if not authenticated
+  if (!account) {
+    return <Navigate to="/login" replace />;
+  }
   return (
     <div>
       {/* Mobile sidebar */}
@@ -236,16 +278,22 @@ export default function Layout() {
             </button>
             <div aria-hidden="true" className="hidden lg:block lg:h-6 lg:w-px lg:bg-gray-900/10" />
             <Menu as="div" className="relative">
-              <MenuButton className="-m-1.5 flex items-center p-1.5">
+            <MenuButton className="-m-1.5 flex items-center p-1.5">
                 <span className="sr-only">Open user menu</span>
-                <img
-                  alt=""
-                  src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                  className="size-8 rounded-full bg-gray-50"
-                />
+                {photo ? (
+                  <img
+                    alt={user?.name || account.username}
+                    src={photo}
+                    className="size-8 rounded-full bg-gray-50"
+                  />
+                ) : (
+                  <span className="size-8 inline-flex items-center justify-center rounded-full bg-gray-100 text-gray-500 text-sm font-medium">
+                    {user?.name ? user.name.charAt(0) : account.username.charAt(0)}
+                  </span>
+                )}
                 <span className="hidden lg:flex lg:items-center">
                   <span aria-hidden="true" className="ml-4 text-sm/6 font-semibold text-gray-900">
-                    Tom Cook
+                    {user?.name || account.username}
                   </span>
                   <ChevronDownIcon aria-hidden="true" className="ml-2 size-5 text-gray-400" />
                 </span>

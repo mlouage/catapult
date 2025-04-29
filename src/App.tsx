@@ -10,12 +10,14 @@ import Settings from './pages/Settings'
 import TeamDetail from './pages/TeamDetail'
 import Profile from './pages/Profile'
 import Logout from './pages/Logout'
+import Login from './pages/Login'
 
 function App() {
 
   return (
     <BrowserRouter>
       <Routes>
+        <Route path="/login" element={<Login />} />
         <Route path="/" element={<Layout />}>
           <Route index element={<Navigate to="/dashboard" replace />} />
           <Route path="dashboard" element={<Dashboard />} />
