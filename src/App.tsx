@@ -2,9 +2,8 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import Layout from './components/Layout'
 import Dashboard from './pages/Dashboard'
 import Team from './pages/Team'
-import Projects from './pages/Projects'
-import Calendar from './pages/Calendar'
-import Documents from './pages/Documents'
+import Deployments from './pages/Deployments'
+import Releases from './pages/Releases'
 import Reports from './pages/Reports'
 import Settings from './pages/Settings'
 import TeamDetail from './pages/TeamDetail'
@@ -22,9 +21,8 @@ function App() {
           <Route index element={<Navigate to="/dashboard" replace />} />
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="team" element={<Team />} />
-          <Route path="projects" element={<Projects />} />
-          <Route path="calendar" element={<Calendar />} />
-          <Route path="documents" element={<Documents />} />
+          <Route path="deployments" element={<Deployments />} />
+          <Route path="releases" element={<Releases />} />
           <Route path="reports" element={<Reports />} />
           <Route path="settings" element={<Settings />} />
           <Route path="teams/:teamSlug" element={<TeamDetail />} />

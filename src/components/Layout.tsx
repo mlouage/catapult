@@ -3,8 +3,10 @@ import { useState, useEffect } from 'react'
 import { useMsal } from '@azure/msal-react'
 import { loginRequest } from '../authConfig'
 import { Menu, MenuButton, MenuItems, MenuItem, Dialog, DialogBackdrop, DialogPanel, TransitionChild } from '@headlessui/react'
-import { HomeIcon, UsersIcon, FolderIcon, CalendarIcon, DocumentDuplicateIcon, ChartPieIcon, Cog6ToothIcon, BellIcon, Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline'
+import { HomeIcon, FolderIcon, DocumentDuplicateIcon, ChartPieIcon, Cog6ToothIcon, BellIcon, Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline'
 import { ChevronDownIcon, MagnifyingGlassIcon } from '@heroicons/react/20/solid'
+
+import Logo from '../assets/symbol-xprtz.svg'
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(' ')
@@ -12,17 +14,14 @@ function classNames(...classes: string[]) {
 
 const navigation = [
   { name: 'Dashboard', to: '/dashboard', icon: HomeIcon },
-  { name: 'Team', to: '/team', icon: UsersIcon },
-  { name: 'Projects', to: '/projects', icon: FolderIcon },
-  { name: 'Calendar', to: '/calendar', icon: CalendarIcon },
-  { name: 'Documents', to: '/documents', icon: DocumentDuplicateIcon },
+  { name: 'Releases', to: '/releases', icon: FolderIcon },
+  { name: 'Deployments', to: '/deployments', icon: DocumentDuplicateIcon },
   { name: 'Reports', to: '/reports', icon: ChartPieIcon },
 ]
 
 const teams = [
-  { name: 'Heroicons', to: '/teams/heroicons', initial: 'H' },
-  { name: 'Tailwind Labs', to: '/teams/tailwind-labs', initial: 'T' },
-  { name: 'Workcation', to: '/teams/workcation', initial: 'W' },
+  { name: 'Developers', to: '/teams/developers', initial: 'D' },
+  { name: 'Administrators', to: '/teams/administrators', initial: 'A' },
 ]
 
 const userNavigation = [
@@ -87,11 +86,11 @@ export default function Layout() {
                 </button>
               </div>
             </TransitionChild>
-            <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-indigo-600 px-6 pb-4">
+            <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-primary-600 px-6 pb-4">
               <div className="flex h-16 shrink-0 items-center">
                 <img
                   alt="Your Company"
-                  src="https://tailwindcss.com/plus-assets/img/logos/mark.svg?color=white"
+                  src={Logo}
                   className="h-8 w-auto"
                 />
               </div>
@@ -107,8 +106,8 @@ export default function Layout() {
                             className={({ isActive }) =>
                               classNames(
                                 isActive
-                                  ? 'bg-indigo-700 text-white'
-                                  : 'text-indigo-200 hover:bg-indigo-700 hover:text-white',
+                                  ? 'bg-primary-700 text-white'
+                                  : 'text-primary-200 hover:bg-primary-700 hover:text-white',
                                 'group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold'
                               )
                             }
@@ -121,7 +120,7 @@ export default function Layout() {
                     </ul>
                   </li>
                   <li>
-                    <div className="text-xs/6 font-semibold text-indigo-200">Your teams</div>
+                    <div className="text-xs/6 font-semibold text-primary-200">Your teams</div>
                     <ul role="list" className="-mx-2 mt-2 space-y-1">
                       {teams.map((team) => (
                         <li key={team.name}>
@@ -131,13 +130,13 @@ export default function Layout() {
                             className={({ isActive }) =>
                               classNames(
                                 isActive
-                                  ? 'bg-indigo-700 text-white'
-                                  : 'text-indigo-200 hover:bg-indigo-700 hover:text-white',
+                                  ? 'bg-primary-700 text-white'
+                                  : 'text-primary-200 hover:bg-primary-700 hover:text-white',
                                 'group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold'
                               )
                             }
                           >
-                            <span className="flex size-6 shrink-0 items-center justify-center rounded-lg border border-indigo-400 bg-indigo-500 text-[0.625rem] font-medium text-white">
+                            <span className="flex size-6 shrink-0 items-center justify-center rounded-lg border border-primary-400 bg-primary-500 text-[0.625rem] font-medium text-white">
                               {team.initial}
                             </span>
                             <span className="truncate">{team.name}</span>
@@ -153,8 +152,8 @@ export default function Layout() {
                       className={({ isActive }) =>
                         classNames(
                           isActive
-                            ? 'bg-indigo-700 text-white'
-                            : 'text-indigo-200 hover:bg-indigo-700 hover:text-white',
+                            ? 'bg-primary-700 text-white'
+                            : 'text-primary-200 hover:bg-primary-700 hover:text-white',
                           'group -mx-2 flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold'
                         )
                       }
@@ -170,11 +169,11 @@ export default function Layout() {
           <div className="w-14 flex-shrink-0" aria-hidden="true" />
         </div>
       </Dialog>
-      <div className="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-72 lg:flex-col bg-indigo-600 px-6 pb-4">
+      <div className="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-72 lg:flex-col bg-primary-600 px-6 pb-4">
         <div className="flex h-16 shrink-0 items-center">
           <img
             alt="Your Company"
-            src="https://tailwindcss.com/plus-assets/img/logos/mark.svg?color=white"
+            src={Logo}
             className="h-8 w-auto"
           />
         </div>
@@ -189,8 +188,8 @@ export default function Layout() {
                       className={({ isActive }) =>
                         classNames(
                           isActive
-                            ? 'bg-indigo-700 text-white'
-                            : 'text-indigo-200 hover:bg-indigo-700 hover:text-white',
+                            ? 'bg-primary-700 text-white'
+                            : 'text-primary-200 hover:bg-primary-700 hover:text-white',
                           'group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold'
                         )
                       }
@@ -203,7 +202,7 @@ export default function Layout() {
               </ul>
             </li>
             <li>
-              <div className="text-xs/6 font-semibold text-indigo-200">Your teams</div>
+              <div className="text-xs/6 font-semibold text-primary-200">Your teams</div>
               <ul role="list" className="-mx-2 mt-2 space-y-1">
                 {teams.map((team) => (
                   <li key={team.name}>
@@ -212,13 +211,13 @@ export default function Layout() {
                       className={({ isActive }) =>
                         classNames(
                           isActive
-                            ? 'bg-indigo-700 text-white'
-                            : 'text-indigo-200 hover:bg-indigo-700 hover:text-white',
+                            ? 'bg-primary-700 text-white'
+                            : 'text-primary-200 hover:bg-primary-700 hover:text-white',
                           'group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold'
                         )
                       }
                     >
-                      <span className="flex size-6 shrink-0 items-center justify-center rounded-lg border border-indigo-400 bg-indigo-500 text-[0.625rem] font-medium text-white">
+                      <span className="flex size-6 shrink-0 items-center justify-center rounded-lg border border-primary-400 bg-primary-500 text-[0.625rem] font-medium text-white">
                         {team.initial}
                       </span>
                       <span className="truncate">{team.name}</span>
@@ -233,8 +232,8 @@ export default function Layout() {
                 className={({ isActive }) =>
                   classNames(
                     isActive
-                      ? 'bg-indigo-700 text-white'
-                      : 'text-indigo-200 hover:bg-indigo-700 hover:text-white',
+                      ? 'bg-primary-700 text-white'
+                      : 'text-primary-200 hover:bg-primary-700 hover:text-white',
                     'group -mx-2 flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold'
                   )
                 }

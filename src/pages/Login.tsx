@@ -23,7 +23,7 @@ export default function Login() {
       <div className="w-full max-w-md p-8 bg-white rounded-lg shadow">
         <img
           alt="Your Company"
-          src="https://tailwindcss.com/plus-assets/img/logos/mark.svg?color=indigo"
+          src="https://tailwindcss.com/plus-assets/img/logos/mark.svg?color=primary"
           className="h-8 mx-auto mb-6"
         />
         <h2 className="text-center text-2xl font-bold text-gray-900 mb-6">
@@ -31,7 +31,7 @@ export default function Login() {
         </h2>
         <button
           onClick={handleLogin}
-          className="w-full flex items-center justify-center px-4 py-2 bg-indigo-600 text-white font-semibold rounded hover:bg-indigo-700"
+          className="w-full flex items-center justify-center px-4 py-2 bg-primary-600 text-white font-semibold rounded hover:bg-primary-700"
         >
           Sign in with Microsoft
         </button>
