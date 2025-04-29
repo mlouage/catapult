@@ -24,7 +24,7 @@ const teams = [
 
 const userNavigation = [
   { name: 'Your profile', to: '/profile' },
-  { name: 'Sign out', to: '/signout' },
+  { name: 'Log out', to: '/logout' },
 ]
 
 export default function Layout() {

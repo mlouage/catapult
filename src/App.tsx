@@ -8,6 +8,8 @@ import Documents from './pages/Documents'
 import Reports from './pages/Reports'
 import Settings from './pages/Settings'
 import TeamDetail from './pages/TeamDetail'
+import Profile from './pages/Profile'
+import Logout from './pages/Logout'
 
 function App() {
 
@@ -24,6 +26,8 @@ function App() {
           <Route path="reports" element={<Reports />} />
           <Route path="settings" element={<Settings />} />
           <Route path="teams/:teamSlug" element={<TeamDetail />} />
+          <Route path="profile" element={<Profile />} />
+          <Route path="logout" element={<Logout />} />
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
