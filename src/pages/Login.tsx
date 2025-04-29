@@ -2,6 +2,8 @@ import { useMsal } from "@azure/msal-react";
 import { loginRequest } from "../authConfig";
 import { Navigate } from "react-router-dom";
 
+import Logo from '../assets/logo.svg'
+
 export default function Login() {
   const { instance, accounts } = useMsal();
   const account = accounts[0];
@@ -22,8 +24,8 @@ export default function Login() {
     <div className="flex items-center justify-center h-screen bg-gray-100">
       <div className="w-full max-w-md p-8 bg-white rounded-lg shadow">
         <img
-          alt="Your Company"
-          src="https://tailwindcss.com/plus-assets/img/logos/mark.svg?color=primary"
+          alt="XPRTZ.net"
+          src={Logo}
           className="h-8 mx-auto mb-6"
         />
         <h2 className="text-center text-2xl font-bold text-gray-900 mb-6">
