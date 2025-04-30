@@ -16,7 +16,6 @@ const navigation = [
   { name: 'Dashboard', to: '/dashboard', icon: HomeIcon },
   { name: 'Releases', to: '/releases', icon: FolderIcon },
   { name: 'Deployments', to: '/deployments', icon: DocumentDuplicateIcon },
-  { name: 'Reports', to: '/reports', icon: ChartPieIcon },
 ]
 
 const teams = [
@@ -172,7 +171,7 @@ export default function Layout() {
       <div className="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-72 lg:flex-col bg-primary-600 px-6 pb-4">
         <div className="flex h-16 shrink-0 items-center">
           <img
-            alt="Your Company"
+            alt="XPRTZ B.V."
             src={Logo}
             className="h-8 w-auto"
           />
@@ -257,24 +256,25 @@ export default function Layout() {
             <Bars3Icon aria-hidden="true" className="size-6" />
           </button>
           <div aria-hidden="true" className="h-6 w-px bg-gray-900/10 lg:hidden" />
-          <form action="#" method="GET" className="grid flex-1 grid-cols-1">
-            <input
+          <div className="grid flex-1 grid-cols-1">
+            &nbsp;
+            {/* <input
               name="search"
               type="search"
               placeholder="Search"
               aria-label="Search"
               className="col-start-1 row-start-1 block size-full bg-white pl-8 text-base text-gray-900 outline-hidden placeholder:text-gray-400 sm:text-sm/6"
-            />
-            <MagnifyingGlassIcon
+            /> */}
+            {/* <MagnifyingGlassIcon
               aria-hidden="true"
               className="pointer-events-none col-start-1 row-start-1 size-5 self-center text-gray-400"
-            />
-          </form>
+            /> */}
+          </div>
           <div className="flex items-center gap-x-4 lg:gap-x-6">
-            <button type="button" className="-m-2.5 p-2.5 text-gray-400 hover:text-gray-500">
+            {/* <button type="button" className="-m-2.5 p-2.5 text-gray-400 hover:text-gray-500">
               <span className="sr-only">View notifications</span>
               <BellIcon aria-hidden="true" className="size-6" />
-            </button>
+            </button> */}
             <div aria-hidden="true" className="hidden lg:block lg:h-6 lg:w-px lg:bg-gray-900/10" />
             <Menu as="div" className="relative">
             <MenuButton className="-m-1.5 flex items-center p-1.5">
