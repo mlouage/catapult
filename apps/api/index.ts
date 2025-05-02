@@ -5,22 +5,24 @@ import { logger } from 'hono/logger'
 import 'dotenv/config'
 
 import { protect } from './middlewares/auth.js'
-import releases from './releases.js'
-import deployments from './deployments.js'
+import { verifyWebhook } from './middlewares/webhookAuth.js'
+import releases from './routes/releases.js'
+import deployments from './routes/deployments.js'
+import webhooks from './routes/webhooks.js'
 
-const app = new Hono().basePath('/api');
+const app = new Hono().basePath('/api')
 
-app.use('*', logger());
-
-app.get('/', (c) => {
-  return c.text('Hello Hono!')
-})
+app.use('*', logger())
+app.use('/protected/*', protect)
+app.use('/events/*', verifyWebhook)
 
 app.route('/releases', releases)
 app.route('/deployments', deployments)
+app.route('/events', webhooks)
 
-const protectedRoutes = app.use('/protected/*', protect)
-
+app.get('/', (c) => {
+  return c.text('Hello!')
+})
 app.get('/protected/protected-data', (c) => {
   // Access user info from context if set in middleware
   const user = c.get('user');
@@ -32,7 +34,7 @@ app.get('/protected/protected-data', (c) => {
     userName: user?.name,
     scopes: user?.scp,
   });
-});
+})
 
 serve({
   fetch: app.fetch,
