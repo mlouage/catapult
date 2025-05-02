@@ -1,6 +1,7 @@
 import { useParams } from 'react-router-dom'
 import Title from '../components/Title'
 import TeamMembers from '../components/TeamMembers'
+import ProtectedDataFetcher from '../components/ProtectedDataFetcher'
 
 export default function TeamDetail() {
   const { teamSlug } = useParams()
@@ -13,6 +14,7 @@ export default function TeamDetail() {
     <div>
       <Title title={name} />
       <TeamMembers />
+      <ProtectedDataFetcher />
     </div>
   )
 }

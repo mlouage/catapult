@@ -13,5 +13,9 @@ export const msalConfig: Configuration = {
 };
 
 export const loginRequest: PopupRequest = {
-  scopes: ["User.Read"],
+  scopes: ["User.Read", "api://catapult-api/access_as_user"],
+};
+
+export const apiRequest: PopupRequest = {
+  scopes: ["api://catapult-api/access_as_user"],
 };

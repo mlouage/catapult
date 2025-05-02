@@ -1,10 +1,11 @@
 import { NavLink, Outlet, Navigate } from 'react-router-dom'
 import { useState, useEffect } from 'react'
 import { useMsal } from '@azure/msal-react'
+import { InteractionStatus } from "@azure/msal-browser";
 import { loginRequest } from '../authConfig'
 import { Menu, MenuButton, MenuItems, MenuItem, Dialog, DialogBackdrop, DialogPanel, TransitionChild } from '@headlessui/react'
-import { HomeIcon, FolderIcon, DocumentDuplicateIcon, ChartPieIcon, Cog6ToothIcon, BellIcon, Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline'
-import { ChevronDownIcon, MagnifyingGlassIcon } from '@heroicons/react/20/solid'
+import { HomeIcon, FolderIcon, DocumentDuplicateIcon, Cog6ToothIcon, Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline'
+import { ChevronDownIcon } from '@heroicons/react/20/solid'
 
 import Logo from '../assets/symbol-xprtz.svg'
 
@@ -30,46 +31,58 @@ const userNavigation = [
 
 export default function Layout() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
-  const { instance, accounts } = useMsal();
+  const { instance, accounts, inProgress } = useMsal();
   const account = accounts[0];
-  const [user, setUser] = useState<{ name: string; email: string } | null>(null);
+  const [user, setUser] = useState<{ name: string; email: string; givenName: string; surname: string  } | null>(null);
   const [photo, setPhoto] = useState<string | null>(null);
 
   // Fetch user profile and photo from Microsoft Graph
   useEffect(() => {
     const fetchProfile = async () => {
-      try {
-        const response = await instance.acquireTokenSilent({
-          ...loginRequest,
-          account,
-        });
-        const headers = new Headers();
-        headers.append("Authorization", `Bearer ${response.accessToken}`);
-        // Fetch user profile
-        const profileRes = await fetch("https://graph.microsoft.com/v1.0/me", { headers });
-        if (profileRes.ok) {
-          const profileData = await profileRes.json();
-          setUser({
-            name: profileData.displayName,
-            email: profileData.mail || profileData.userPrincipalName,
+      if (account && inProgress === InteractionStatus.None) {
+        try {
+          const response = await instance.acquireTokenSilent({
+            ...loginRequest,
+            account,
           });
+          const headers = new Headers();
+          headers.append("Authorization", `Bearer ${response.accessToken}`);
+
+          // Fetch user profile
+          const profileRes = await fetch("https://graph.microsoft.com/v1.0/me", { headers });
+          if (profileRes.ok) {
+            const profileData = await profileRes.json();
+            setUser({
+              name: profileData.displayName,
+              email: profileData.mail || profileData.userPrincipalName,
+              givenName: profileData.givenName,
+              surname: profileData.surname,
+            });
+          }
+
+          // Fetch profile photo
+          const photoRes = await fetch("https://graph.microsoft.com/v1.0/me/photo/$value", { headers });
+          if (photoRes.ok) {
+            const blob = await photoRes.blob();
+            setPhoto(URL.createObjectURL(blob));
+          }
+        } catch (error) {
+          console.error("Error fetching profile: ", error);
         }
-        // Fetch profile photo
-        const photoRes = await fetch("https://graph.microsoft.com/v1.0/me/photo/$value", { headers });
-        if (photoRes.ok) {
-          const blob = await photoRes.blob();
-          setPhoto(URL.createObjectURL(blob));
-        }
-      } catch (error) {
-        console.error("Error fetching profile: ", error);
+      } else if (inProgress !== InteractionStatus.None) {
+        console.log("MSAL interaction in progress, waiting...");
+      } else if (!account) {
+        console.error("No account or in progress");
       }
     };
     fetchProfile();
-  }, [account, instance]);
+  }, [account, instance, inProgress]);
+
   // Redirect to login if not authenticated
   if (!account) {
     return <Navigate to="/login" replace />;
   }
+
   return (
     <div>
       {/* Mobile sidebar */}
@@ -281,18 +294,18 @@ export default function Layout() {
                 <span className="sr-only">Open user menu</span>
                 {photo ? (
                   <img
-                    alt={user?.name || account.username}
+                    alt={user?.givenName + " " + user?.surname || account.username}
                     src={photo}
                     className="size-8 rounded-full bg-gray-50"
                   />
                 ) : (
                   <span className="size-8 inline-flex items-center justify-center rounded-full bg-gray-100 text-gray-500 text-sm font-medium">
-                    {user?.name ? user.name.charAt(0) : account.username.charAt(0)}
+                    {user?.givenName && user?.surname ? user.givenName.charAt(0) + user.surname.charAt(0) : account.username.charAt(0)}
                   </span>
                 )}
                 <span className="hidden lg:flex lg:items-center">
                   <span aria-hidden="true" className="ml-4 text-sm/6 font-semibold text-gray-900">
-                    {user?.name || account.username}
+                    {user?.givenName + " " + user?.surname || account.username}
                   </span>
                   <ChevronDownIcon aria-hidden="true" className="ml-2 size-5 text-gray-400" />
                 </span>
