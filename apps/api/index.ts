@@ -8,17 +8,20 @@ import { protect } from './middlewares/auth.js'
 import { verifyWebhook } from './middlewares/webhookAuth.js'
 import releases from './routes/releases.js'
 import deployments from './routes/deployments.js'
-import webhooks from './routes/webhooks.js'
+import events from './routes/events.js'
 
 const app = new Hono().basePath('/api')
 
 app.use('*', logger())
-app.use('/protected/*', protect)
+app.use('/protected/*', protect)  // TODO: remove later
 app.use('/events/*', verifyWebhook)
 
+// app.use('/releases/*', protect)
 app.route('/releases', releases)
+
 app.route('/deployments', deployments)
-app.route('/events', webhooks)
+
+app.route('/events', events)
 
 app.get('/', (c) => {
   return c.text('Hello!')

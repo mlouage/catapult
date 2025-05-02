@@ -1,0 +1,15 @@
+POST http://localhost:3000/api/releases
+Content-Type: application/json
+
+{
+  "title": "Release 2",
+  "description": "This is a test test"
+}
+
+###
+
+POST http://localhost:3000/api/releases/1/close
+
+###
+
+GET http://localhost:3000/api/releases

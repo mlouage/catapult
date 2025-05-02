@@ -1,7 +1,6 @@
-// packages/api/src/db/index.ts
-
 import { drizzle } from 'drizzle-orm/postgres-js';
 import postgres from 'postgres';
+import { schema } from './schema.js';
 
 const dbUser = process.env.DB_USER || process.env.CATAPULTUSER;
 const dbPassword = process.env.DB_PASSWORD || process.env.CATAPULTPASSWORD;
@@ -26,7 +25,7 @@ const pool = postgres(databaseUrl, {
 });
 
 // Create the Drizzle instance with the schema
-export const db = drizzle(pool);
+export const db = drizzle(pool, { schema });
 
 console.log('🐘 Database connection pool initialized.');
 

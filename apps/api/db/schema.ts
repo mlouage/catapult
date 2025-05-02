@@ -50,3 +50,12 @@ export const strapiWebhooksRelations = relations(eventsTable, ({ one }) => ({
       references: [releasesTable.id],
   }),
 }));
+
+export const schema = {
+  //...catapult
+  releaseStatusEnum,
+  releasesTable,
+  releasesRelations,
+  eventsTable,
+  strapiWebhooksRelations,
+};
