@@ -294,7 +294,7 @@ export default function Layout() {
                 <span className="sr-only">Open user menu</span>
                 {photo ? (
                   <img
-                    alt={user?.givenName + " " + user?.surname || account.username}
+                    alt={user?.givenName && user?.surname ? user?.givenName + " " + user?.surname : account.username}
                     src={photo}
                     className="size-8 rounded-full bg-gray-50"
                   />
@@ -305,7 +305,7 @@ export default function Layout() {
                 )}
                 <span className="hidden lg:flex lg:items-center">
                   <span aria-hidden="true" className="ml-4 text-sm/6 font-semibold text-gray-900">
-                    {user?.givenName + " " + user?.surname || account.username}
+                    {user?.givenName && user?.surname ? user?.givenName + " " + user?.surname : account.username}
                   </span>
                   <ChevronDownIcon aria-hidden="true" className="ml-2 size-5 text-gray-400" />
                 </span>
