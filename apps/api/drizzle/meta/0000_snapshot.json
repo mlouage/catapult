@@ -1,12 +1,12 @@
 {
-  "id": "92b2789f-1cfd-41e1-9679-3ced71a3b069",
+  "id": "e1bf02ca-82eb-4605-aa7c-3b08296a9752",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
-    "public.strapi_webhooks": {
-      "name": "strapi_webhooks",
-      "schema": "",
+    "catapult.events": {
+      "name": "events",
+      "schema": "catapult",
       "columns": {
         "id": {
           "name": "id",
@@ -21,50 +21,74 @@
           "notNull": true,
           "default": "now()"
         },
-        "strapi_event": {
-          "name": "strapi_event",
+        "event_name": {
+          "name": "event_name",
           "type": "text",
           "primaryKey": false,
           "notNull": true
         },
-        "strapi_model": {
-          "name": "strapi_model",
+        "model": {
+          "name": "model",
           "type": "text",
           "primaryKey": false,
           "notNull": true
         },
-        "strapi_uid": {
-          "name": "strapi_uid",
+        "uid": {
+          "name": "uid",
           "type": "text",
           "primaryKey": false,
           "notNull": true
         },
-        "strapi_event_created_at": {
-          "name": "strapi_event_created_at",
+        "event_created_at": {
+          "name": "event_created_at",
           "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": true
         },
-        "strapi_entry_id": {
-          "name": "strapi_entry_id",
+        "event_updated_at": {
+          "name": "event_updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "event_published_at": {
+          "name": "event_published_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "entry_id": {
+          "name": "entry_id",
           "type": "integer",
           "primaryKey": false,
           "notNull": true
         },
-        "strapi_entry_title": {
-          "name": "strapi_entry_title",
+        "entry_title": {
+          "name": "entry_title",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "strapi_created_by_firstname": {
-          "name": "strapi_created_by_firstname",
+        "created_by_firstname": {
+          "name": "created_by_firstname",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "strapi_updated_by_firstname": {
-          "name": "strapi_updated_by_firstname",
+        "updated_by_firstname": {
+          "name": "updated_by_firstname",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_by_lastname": {
+          "name": "created_by_lastname",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "updated_by_lastname": {
+          "name": "updated_by_lastname",
           "type": "text",
           "primaryKey": false,
           "notNull": false
@@ -74,6 +98,79 @@
           "type": "jsonb",
           "primaryKey": false,
           "notNull": true
+        },
+        "release_id": {
+          "name": "release_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "events_release_id_releases_id_fk": {
+          "name": "events_release_id_releases_id_fk",
+          "tableFrom": "events",
+          "tableTo": "releases",
+          "schemaTo": "catapult",
+          "columnsFrom": [
+            "release_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "catapult.releases": {
+      "name": "releases",
+      "schema": "catapult",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "title": {
+          "name": "title",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "status": {
+          "name": "status",
+          "type": "release_status",
+          "typeSchema": "catapult",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'open'"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "closed_at": {
+          "name": "closed_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
         }
       },
       "indexes": {},
@@ -85,8 +182,19 @@
       "isRLSEnabled": false
     }
   },
-  "enums": {},
-  "schemas": {},
+  "enums": {
+    "catapult.release_status": {
+      "name": "release_status",
+      "schema": "catapult",
+      "values": [
+        "open",
+        "closed"
+      ]
+    }
+  },
+  "schemas": {
+    "catapult": "catapult"
+  },
   "sequences": {},
   "roles": {},
   "policies": {},

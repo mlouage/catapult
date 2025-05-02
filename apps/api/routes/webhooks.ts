@@ -1,8 +1,8 @@
 import { Hono } from 'hono'
 
-import { db } from '../db';
-import { strapiWebhooksTable, type StrapiEntryPayload } from '../db/schema';
-
+import { db } from '../db/index.js';
+import { eventsTable } from '../db/schema.js';
+import type { EntryPayload } from '../db/EntryPayload.js';
 const app = new Hono()
 
 app.post('/', async (c) => {
@@ -12,7 +12,7 @@ app.post('/', async (c) => {
         console.log(`Received valid Strapi webhook event: ${payload.event} for model ${payload.model}`);
 
         // --- Prepare data for insertion ---
-        const entryData = payload.entry as StrapiEntryPayload | undefined; // Cast entry for type safety
+        const entryData = payload.entry as EntryPayload | undefined; // Cast entry for type safety
 
         if (!entryData || typeof entryData.id !== 'number') {
              console.warn('Webhook payload missing valid entry data or entry.id.');
@@ -20,21 +20,21 @@ app.post('/', async (c) => {
              return c.json({ message: 'Webhook ignored: Missing valid entry data' }, 202); // 202 Accepted but not processed
         }
 
-        const dataToInsert = {
-            strapiEvent: payload.event,
-            strapiModel: payload.model,
-            strapiUid: payload.uid,
-            strapiEventCreatedAt: new Date(payload.createdAt),
-            strapiEventUpdatedAt: new Date(entryData.updatedAt),
-            strapiEntryId: entryData.id,
+        const dataToInsert= {
+            eventName: payload.event,
+            model: payload.model,
+            uid: payload.uid,
+            eventCreatedAt: new Date(payload.createdAt),
+            eventUpdatedAt: new Date(entryData.updatedAt),
+            entryId: entryData.id,
 
             // Use optional chaining for potentially missing fields
-            strapiEntryTitle: entryData.title ?? null,
-            strapiCreatedByFirstname: entryData.createdBy?.firstname ?? null,
-            strapiUpdatedByFirstname: entryData.updatedBy?.firstname ?? null,
-            strapiCreatedByLastname: entryData.createdBy?.lastname ?? null,
-            strapiUpdatedByLastname: entryData.updatedBy?.lastname ?? null,
-            strapiEventPublishedAt: entryData.publishedAt != null ? new Date(entryData.publishedAt) : null,
+            entryTitle: entryData.title ?? null,
+            createdByFirstname: entryData.createdBy?.firstname ?? null,
+            updatedByFirstname: entryData.updatedBy?.firstname ?? null,
+            createdByLastname: entryData.createdBy?.lastname ?? null,
+            updatedByLastname: entryData.updatedBy?.lastname ?? null,
+            eventPublishedAt: entryData.publishedAt != null ? new Date(entryData.publishedAt) : null,
 
             // Store the full entry object in the JSONB column
             entryPayload: entryData,
@@ -42,7 +42,7 @@ app.post('/', async (c) => {
 
         // --- Insert data into Postgres using Drizzle ---
         console.log('Inserting webhook data into database...');
-        await db.insert(strapiWebhooksTable).values(dataToInsert);
+        await db.insert(eventsTable).values(dataToInsert);
         console.log(`✅ Successfully inserted webhook data for entry ID: ${entryData.id}`);
         // --- End DB Insertion ---
 

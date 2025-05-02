@@ -2,10 +2,7 @@
 
 import { drizzle } from 'drizzle-orm/postgres-js';
 import postgres from 'postgres';
-import * as schema from './schema';
-// import 'dotenv/config'; // Ensure env vars are loaded
 
-// --- Construct DATABASE_URL dynamically (if using components) ---
 const dbUser = process.env.DB_USER || process.env.CATAPULTUSER;
 const dbPassword = process.env.DB_PASSWORD || process.env.CATAPULTPASSWORD;
 const dbHost = process.env.DB_HOST || process.env.SERVER;
@@ -19,9 +16,7 @@ if (!dbUser || !dbPassword || !dbHost || !dbName) {
 
 const encodedDbPassword = encodeURIComponent(dbPassword);
 
-// Construct URL WITHOUT the schema parameter
 const databaseUrl = `postgresql://${dbUser}:${encodedDbPassword}@${dbHost}:${dbPort}/${dbName}`;
-// --- End dynamic construction ---
 
 // Create the connection pool
 const pool = postgres(databaseUrl, {
@@ -31,9 +26,7 @@ const pool = postgres(databaseUrl, {
 });
 
 // Create the Drizzle instance with the schema
-export const db = drizzle(pool, { schema });
-
-export { schema };
+export const db = drizzle(pool);
 
 console.log('🐘 Database connection pool initialized.');
 

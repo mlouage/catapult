@@ -1,49 +1,52 @@
-import { pgTable, serial, text, integer, timestamp, jsonb } from 'drizzle-orm/pg-core';
+import { serial, text, integer, timestamp, jsonb, pgSchema } from 'drizzle-orm/pg-core';
+import { relations } from 'drizzle-orm';
+import type { EntryPayload } from './EntryPayload.js';
 
-export type StrapiEntryPayload = {
-  id: number;
-  documentId: string;
-  title?: string | null; // Optional
-  createdAt: string; // ISO date string
-  updatedAt: string; // ISO date string
-  publishedAt?: string | null; // ISO date string
-  createdBy?: {
-    id?: number; // Assuming ID might be there sometimes
-    documentId?: string;
-    firstname?: string | null;
-    lastname?: string | null;
-  } | null; // Optional
-  updatedBy?: {
-     id?: number;
-     documentId?: string;
-     firstname?: string | null;
-     lastname?: string | null;
-  } | null; // Optional
-  [key: string]: any; // Allow other arbitrary fields
-};
+export const catapult = pgSchema("catapult");
 
-// Define the table for storing webhook events
-export const strapiWebhooksTable = pgTable('strapi_webhooks', {
-  // Core columns
-  id: serial('id').primaryKey(), // Auto-incrementing primary key
-  receivedAt: timestamp('received_at', { withTimezone: true, mode: 'date' }).defaultNow().notNull(), // When we received the webhook
+export const releaseStatusEnum = catapult.enum('release_status', ['open', 'closed']);
+
+export const releasesTable = catapult.table('releases', {
+  id: serial('id').primaryKey(),
+  title: text('title').notNull(),
+  description: text('description'),
+  status: releaseStatusEnum('status').default('open').notNull(),
+  createdAt: timestamp('created_at', { withTimezone: true, mode: 'date' }).defaultNow().notNull(),
+  closedAt: timestamp('closed_at', { withTimezone: true, mode: 'date' }),
+});
+
+export const releasesRelations = relations(releasesTable, ({ many }) => ({
+  webhooks: many(eventsTable),
+}));
+
+export const eventsTable = catapult.table('events', {
+  id: serial('id').primaryKey(),
+  receivedAt: timestamp('received_at', { withTimezone: true, mode: 'date' }).defaultNow().notNull(),
 
   // Structured data from the webhook payload
-  strapiEvent: text('strapi_event').notNull(), // e.g., "entry.update"
-  strapiModel: text('strapi_model').notNull(), // e.g., "tag"
-  strapiUid: text('strapi_uid').notNull(), // e.g., "api::tag.tag"
-  strapiEventCreatedAt: timestamp('strapi_event_created_at', { withTimezone: true, mode: 'date' }).notNull(), // Top-level createdAt from payload
-  strapiEventUpdatedAt: timestamp('strapi_event_updated_at', { withTimezone: true, mode: 'date' }).notNull(), // Top-level updatedAt from payload
-  strapiEventPublishedAt: timestamp('strapi_event_published_at', { withTimezone: true, mode: 'date' }), // Top-level publishedAt from payload
+  eventName: text('event_name').notNull(), // e.g., "entry.update"
+  model: text('model').notNull(), // e.g., "tag"
+  uid: text('uid').notNull(), // e.g., "api::tag.tag"
+  eventCreatedAt: timestamp('event_created_at', { withTimezone: true, mode: 'date' }).notNull(),
+  eventUpdatedAt: timestamp('event_updated_at', { withTimezone: true, mode: 'date' }).notNull(),
+  eventPublishedAt: timestamp('event_published_at', { withTimezone: true, mode: 'date' }),
 
   // Structured data from the 'entry' object (nullable where needed)
-  strapiEntryId: integer('strapi_entry_id').notNull(), // entry.id
-  strapiEntryTitle: text('strapi_entry_title'), // entry.title (nullable)
-  strapiCreatedByFirstname: text('strapi_created_by_firstname'), // entry.createdBy.firstname (nullable)
-  strapiUpdatedByFirstname: text('strapi_updated_by_firstname'), // entry.updatedBy.firstname (nullable)
-  strapiCreatedByLastname: text('strapi_created_by_lastname'), // entry.createdBy.lastname (nullable)
-  strapiUpdatedByLastname: text('strapi_updated_by_lastname'), // entry.updatedBy.lastname (nullable)
+  entryId: integer('entry_id').notNull(),
+  entryTitle: text('entry_title'),
+  createdByFirstname: text('created_by_firstname'),
+  updatedByFirstname: text('updated_by_firstname'),
+  createdByLastname: text('created_by_lastname'),
+  updatedByLastname: text('updated_by_lastname'),
 
-  // The full 'entry' payload stored as JSONB
-  entryPayload: jsonb('entry_payload').$type<StrapiEntryPayload>().notNull(),
+  entryPayload: jsonb('entry_payload').$type<EntryPayload>().notNull(),
+
+  releaseId: integer('release_id').references(() => releasesTable.id, { onDelete: 'set null' }),
 });
+
+export const strapiWebhooksRelations = relations(eventsTable, ({ one }) => ({
+  release: one(releasesTable, {
+      fields: [eventsTable.releaseId],
+      references: [releasesTable.id],
+  }),
+}));
