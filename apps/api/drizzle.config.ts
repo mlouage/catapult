@@ -1,6 +1,5 @@
-import * as dotenv from 'dotenv';
-
-dotenv.config({ path: '.env' });
+import 'dotenv/config';
+import { defineConfig } from 'drizzle-kit';
 
 const dbUser = process.env.DB_USER || process.env.CATAPULTUSER;
 const dbPassword = process.env.DB_PASSWORD || process.env.CATAPULTPASSWORD;
@@ -15,16 +14,13 @@ if (!dbUser || !dbPassword || !dbHost || !dbName) {
 
 const encodedDbPassword = encodeURIComponent(dbPassword);
 
-const databaseUrl = `postgresql://${dbUser}:${encodedDbPassword}@${dbHost}:${dbPort}/${dbName}?schema=${dbSchema}`;
+const databaseUrl = `postgresql://${dbUser}:${encodedDbPassword}@${dbHost}:${dbPort}/${dbName}?search_path=${dbSchema}`;
 
-
-export default {
-  schema: './db/schema.ts',
+export default defineConfig({
   out: './drizzle',
-  driver: 'pg',
+  schema: './db/schema.ts',
+  dialect: 'postgresql',
   dbCredentials: {
-    connectionString: databaseUrl,
+    url: databaseUrl,
   },
-  verbose: true,
-  strict: true,
-};
+});

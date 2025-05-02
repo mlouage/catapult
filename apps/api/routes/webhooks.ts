@@ -24,13 +24,17 @@ app.post('/', async (c) => {
             strapiEvent: payload.event,
             strapiModel: payload.model,
             strapiUid: payload.uid,
-            strapiEventCreatedAt: new Date(payload.createdAt), // Convert ISO string to Date object
+            strapiEventCreatedAt: new Date(payload.createdAt),
+            strapiEventUpdatedAt: new Date(entryData.updatedAt),
             strapiEntryId: entryData.id,
 
             // Use optional chaining for potentially missing fields
             strapiEntryTitle: entryData.title ?? null,
             strapiCreatedByFirstname: entryData.createdBy?.firstname ?? null,
             strapiUpdatedByFirstname: entryData.updatedBy?.firstname ?? null,
+            strapiCreatedByLastname: entryData.createdBy?.lastname ?? null,
+            strapiUpdatedByLastname: entryData.updatedBy?.lastname ?? null,
+            strapiEventPublishedAt: entryData.publishedAt != null ? new Date(entryData.publishedAt) : null,
 
             // Store the full entry object in the JSONB column
             entryPayload: entryData,
