@@ -17,7 +17,7 @@ export default function TeamDetail() {
   const { data: teamData, error, loading, fetchData } = useProtectedApi()
   
   const loadTeamData = async () => {
-    await fetchData(`/api/releases/3`)
+    await fetchData(`/api/releases`)
   }
   
   useEffect(() => {
