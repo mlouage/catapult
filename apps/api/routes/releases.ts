@@ -52,7 +52,6 @@ app.post('/', async (c) => {
 
 app.get('/:id', async (c) => {
   const id = parseInt(c.req.param('id'), 10);
-  const includeWebhooks = c.req.query('events') === 'true';
 
   if (isNaN(id)) {
       throw new HTTPException(400, { message: 'Invalid release ID' });
@@ -60,7 +59,7 @@ app.get('/:id', async (c) => {
 
   let query = db.query.releasesTable.findFirst({
       where: eq(releasesTable.id, id),
-      with: includeWebhooks ? { webhooks: true } : undefined,
+      with: { webhooks: true }
   });
 
   const release = await query;
@@ -85,6 +84,7 @@ app.post('/:id/close', async (c) => {
 
   if (!releaseToClose) {
       const anyRelease = await db.query.releasesTable.findFirst({ where: eq(releasesTable.id, id) });
+
       if (!anyRelease) {
            throw new HTTPException(404, { message: 'Release not found' });
       } else {

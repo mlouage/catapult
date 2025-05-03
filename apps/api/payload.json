@@ -1,0 +1,31 @@
+{
+  "id": 5,
+  "locale": "nl-NL",
+  "createdAt": "2025-05-02T19:44:43.366Z",
+  "createdBy": {
+    "id": 1,
+    "lastname": "Louage",
+    "username": null,
+    "createdAt": "2025-04-29T16:52:12.804Z",
+    "firstname": "Maarten",
+    "updatedAt": "2025-04-29T16:52:12.804Z",
+    "documentId": "et4oyoc9d0cbqzd53tr5x7dd",
+    "publishedAt": "2025-04-29T16:52:12.804Z",
+    "preferedLanguage": null
+  },
+  "firstname": "Maarten",
+  "updatedAt": "2025-05-02T19:44:43.366Z",
+  "updatedBy": {
+    "id": 1,
+    "lastname": "Louage",
+    "username": null,
+    "createdAt": "2025-04-29T16:52:12.804Z",
+    "firstname": "Maarten",
+    "updatedAt": "2025-04-29T16:52:12.804Z",
+    "documentId": "et4oyoc9d0cbqzd53tr5x7dd",
+    "publishedAt": "2025-04-29T16:52:12.804Z",
+    "preferedLanguage": null
+  },
+  "documentId": "wfocg3ne14vfrnxb2yykaszy",
+  "publishedAt": "2025-05-02T19:44:43.397Z"
+}

@@ -26,7 +26,6 @@ app.post('/', async (c) => {
         if (!openRelease) {
             console.log('No open release found. Creating a new one...');
 
-            // Create a new release with status 'open'
             const newRelease = await db.insert(releasesTable).values({
                 title: `Release ${new Date().toISOString().split('T')[0]}`, // Default title
                 status: 'open',
@@ -48,7 +47,8 @@ app.post('/', async (c) => {
             eventCreatedAt: new Date(payload.createdAt),
             eventUpdatedAt: new Date(entryData.updatedAt),
             entryId: entryData.id,
-
+            documentId: entryData.documentId ?? null,
+            locale: entryData.locale ?? null,
             entryTitle: entryData.title ?? null,
             createdByFirstname: entryData.createdBy?.firstname ?? null,
             updatedByFirstname: entryData.updatedBy?.firstname ?? null,

@@ -22,16 +22,14 @@ export const releasesRelations = relations(releasesTable, ({ many }) => ({
 export const eventsTable = catapult.table('events', {
   id: serial('id').primaryKey(),
   receivedAt: timestamp('received_at', { withTimezone: true, mode: 'date' }).defaultNow().notNull(),
-
-  // Structured data from the webhook payload
   eventName: text('event_name').notNull(), // e.g., "entry.update"
   model: text('model').notNull(), // e.g., "tag"
   uid: text('uid').notNull(), // e.g., "api::tag.tag"
+  documentId: text('document_id'), // e.g., "1"
+  locale: text('locale'), // e.g., "en"
   eventCreatedAt: timestamp('event_created_at', { withTimezone: true, mode: 'date' }).notNull(),
   eventUpdatedAt: timestamp('event_updated_at', { withTimezone: true, mode: 'date' }).notNull(),
   eventPublishedAt: timestamp('event_published_at', { withTimezone: true, mode: 'date' }),
-
-  // Structured data from the 'entry' object (nullable where needed)
   entryId: integer('entry_id').notNull(),
   entryTitle: text('entry_title'),
   createdByFirstname: text('created_by_firstname'),
@@ -52,7 +50,6 @@ export const strapiWebhooksRelations = relations(eventsTable, ({ one }) => ({
 }));
 
 export const schema = {
-  //...catapult
   releaseStatusEnum,
   releasesTable,
   releasesRelations,

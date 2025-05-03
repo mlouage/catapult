@@ -1,11 +1,11 @@
 import Title from "../components/Title";
-import NewRelease from "../components/NewRelease";
+import ReleasesList from "../components/ReleasesList.tsx";
 
 export default function Releases() {
   return (
     <div>
       <Title title="Releases" />
-      <NewRelease />
+      <ReleasesList />
     </div>
   )
 }

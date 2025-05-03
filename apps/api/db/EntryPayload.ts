@@ -2,6 +2,7 @@
 export type EntryPayload = {
   id: number;
   documentId: string;
+  locale?: string | null; // Optional
   title?: string | null; // Optional
   createdAt: string; // ISO date string
   updatedAt: string; // ISO date string

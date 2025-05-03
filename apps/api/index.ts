@@ -13,30 +13,15 @@ import events from './routes/events.js'
 const app = new Hono().basePath('/api')
 
 app.use('*', logger())
-app.use('/protected/*', protect)  // TODO: remove later
 app.use('/events/*', verifyWebhook)
 
-// app.use('/releases/*', protect)
+app.use('/releases/*', protect)
 app.route('/releases', releases)
-
 app.route('/deployments', deployments)
-
 app.route('/events', events)
 
 app.get('/', (c) => {
   return c.text('Hello!')
-})
-app.get('/protected/protected-data', (c) => {
-  // Access user info from context if set in middleware
-  const user = c.get('user');
-  console.log('Accessing protected data for user:', user?.oid);
-
-  return c.json({
-    message: 'This is protected data!',
-    userId: user?.oid, // Example using data from token
-    userName: user?.name,
-    scopes: user?.scp,
-  });
 })
 
 serve({
