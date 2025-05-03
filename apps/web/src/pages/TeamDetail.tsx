@@ -28,7 +28,7 @@ export default function TeamDetail() {
   
   return (
     <div>
-      <Title title={name} />
+      <Title title="Test Page" description="Page to test data from API" />
 
       <div className="mt-6">
         {loading && (

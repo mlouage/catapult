@@ -1,229 +1,177 @@
-import { ChatBubbleLeftIcon, CheckCircleIcon } from '@heroicons/react/24/outline'
+import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react'
+import { EllipsisVerticalIcon } from '@heroicons/react/20/solid'
 
-const discussions = [
+const statuses = {
+    Open: 'text-green-700 bg-green-50 ring-green-600/20',
+    Closed: 'text-yellow-800 bg-yellow-50 ring-yellow-600/20',
+}
+const projects = [
     {
         id: 1,
-        title: 'Atque perspiciatis et et aut ut porro voluptatem blanditiis?',
+        name: 'GraphQL API',
         href: '#',
-        author: { name: 'Leslie Alexander', href: '#' },
-        date: '2d ago',
-        dateTime: '2023-01-23T22:34Z',
-        status: 'active',
-        totalComments: 24,
-        commenters: [
-            {
-                id: 12,
-                name: 'Emma Dorsey',
-                imageUrl:
-                    'https://images.unsplash.com/photo-1505840717430-882ce147ef2d?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-            },
-            {
-                id: 6,
-                name: 'Tom Cook',
-                imageUrl:
-                    'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-            },
-            {
-                id: 4,
-                name: 'Lindsay Walton',
-                imageUrl:
-                    'https://images.unsplash.com/photo-1517841905240-472988babdf9?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-            },
-            {
-                id: 16,
-                name: 'Benjamin Russel',
-                imageUrl:
-                    'https://images.unsplash.com/photo-1531427186611-ecfd6d936c79?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-            },
-            {
-                id: 23,
-                name: 'Hector Gibbons',
-                imageUrl:
-                    'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-            },
-        ],
+        status: 'Open',
+        createdBy: 'Leslie Alexander',
+        dueDate: 'March 17, 2023',
+        dueDateTime: '2023-03-17T00:00Z',
     },
     {
         id: 2,
-        title: 'Et ratione distinctio nesciunt recusandae vel ab?',
+        name: 'New benefits plan',
         href: '#',
-        author: { name: 'Michael Foster', href: '#' },
-        date: '2d ago',
-        dateTime: '2023-01-23T19:20Z',
-        status: 'active',
-        totalComments: 6,
-        commenters: [
-            {
-                id: 13,
-                name: 'Alicia Bell',
-                imageUrl:
-                    'https://images.unsplash.com/photo-1509783236416-c9ad59bae472?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-            },
-            {
-                id: 16,
-                name: 'Benjamin Russel',
-                imageUrl:
-                    'https://images.unsplash.com/photo-1531427186611-ecfd6d936c79?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-            },
-            {
-                id: 3,
-                name: 'Dries Vincent',
-                imageUrl:
-                    'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-            },
-        ],
+        status: 'Closed',
+        createdBy: 'Leslie Alexander',
+        dueDate: 'May 5, 2023',
+        dueDateTime: '2023-05-05T00:00Z',
     },
     {
         id: 3,
-        title: 'Blanditiis perferendis fugiat optio dolor minus ut?',
+        name: 'Onboarding emails',
         href: '#',
-        author: { name: 'Dries Vincent', href: '#' },
-        date: '3d ago',
-        dateTime: '2023-01-22T12:59Z',
-        status: 'resolved',
-        totalComments: 22,
-        commenters: [
-            {
-                id: 19,
-                name: 'Lawrence Hunter',
-                imageUrl:
-                    'https://images.unsplash.com/photo-1513910367299-bce8d8a0ebf6?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-            },
-            {
-                id: 21,
-                name: 'Angela Fisher',
-                imageUrl:
-                    'https://images.unsplash.com/photo-1501031170107-cfd33f0cbdcc?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-            },
-            {
-                id: 14,
-                name: 'Jenny Wilson',
-                imageUrl:
-                    'https://images.unsplash.com/photo-1507101105822-7472b28e22ac?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-            },
-            {
-                id: 16,
-                name: 'Benjamin Russel',
-                imageUrl:
-                    'https://images.unsplash.com/photo-1531427186611-ecfd6d936c79?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-            },
-        ],
+        status: 'Closed',
+        createdBy: 'Courtney Henry',
+        dueDate: 'May 25, 2023',
+        dueDateTime: '2023-05-25T00:00Z',
     },
     {
         id: 4,
-        title: 'Voluptatum ducimus voluptatem qui in eum quasi consequatur vel?',
+        name: 'iOS app',
         href: '#',
-        author: { name: 'Lindsay Walton', href: '#' },
-        date: '5d ago',
-        dateTime: '2023-01-20T10:04Z',
-        status: 'resolved',
-        totalComments: 8,
-        commenters: [
-            {
-                id: 10,
-                name: 'Emily Selman',
-                imageUrl:
-                    'https://images.unsplash.com/photo-1502685104226-ee32379fefbe?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-            },
-            {
-                id: 11,
-                name: 'Kristin Watson',
-                imageUrl:
-                    'https://images.unsplash.com/photo-1500917293891-ef795e70e1f6?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-            },
-        ],
+        status: 'Closed',
+        createdBy: 'Leonard Krasner',
+        dueDate: 'June 7, 2023',
+        dueDateTime: '2023-06-07T00:00Z',
     },
     {
         id: 5,
-        title: 'Perferendis cum qui inventore ut excepturi nostrum occaecati?',
+        name: 'Marketing site redesign',
         href: '#',
-        author: { name: 'Courtney Henry', href: '#' },
-        date: '5d ago',
-        dateTime: '2023-01-20T20:12Z',
-        status: 'active',
-        totalComments: 15,
-        commenters: [
-            {
-                id: 11,
-                name: 'Kristin Watson',
-                imageUrl:
-                    'https://images.unsplash.com/photo-1500917293891-ef795e70e1f6?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-            },
-            {
-                id: 6,
-                name: 'Tom Cook',
-                imageUrl:
-                    'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-            },
-            {
-                id: 10,
-                name: 'Emily Selman',
-                imageUrl:
-                    'https://images.unsplash.com/photo-1502685104226-ee32379fefbe?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-            },
-            {
-                id: 16,
-                name: 'Benjamin Russel',
-                imageUrl:
-                    'https://images.unsplash.com/photo-1531427186611-ecfd6d936c79?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-            },
-        ],
+        status: 'Closed',
+        createdBy: 'Courtney Henry',
+        dueDate: 'June 10, 2023',
+        dueDateTime: '2023-06-10T00:00Z',
+    },
+    {
+        id: 6,
+        name: 'GraphQL API',
+        href: '#',
+        status: 'Closed',
+        createdBy: 'Leslie Alexander',
+        dueDate: 'March 17, 2023',
+        dueDateTime: '2023-03-17T00:00Z',
+    },
+    {
+        id: 7,
+        name: 'New benefits plan',
+        href: '#',
+        status: 'Closed',
+        createdBy: 'Leslie Alexander',
+        dueDate: 'May 5, 2023',
+        dueDateTime: '2023-05-05T00:00Z',
+    },
+    {
+        id: 8,
+        name: 'Onboarding emails',
+        href: '#',
+        status: 'Closed',
+        createdBy: 'Courtney Henry',
+        dueDate: 'May 25, 2023',
+        dueDateTime: '2023-05-25T00:00Z',
+    },
+    {
+        id: 9,
+        name: 'iOS app',
+        href: '#',
+        status: 'Closed',
+        createdBy: 'Leonard Krasner',
+        dueDate: 'June 7, 2023',
+        dueDateTime: '2023-06-07T00:00Z',
+    },
+    {
+        id: 10,
+        name: 'Marketing site redesign',
+        href: '#',
+        status: 'Closed',
+        createdBy: 'Courtney Henry',
+        dueDate: 'June 10, 2023',
+        dueDateTime: '2023-06-10T00:00Z',
     },
 ]
+
+function classNames(...classes: string[]) {
+    return classes.filter(Boolean).join(' ')
+}
 
 export default function ReleasesList() {
     return (
         <ul role="list" className="divide-y divide-gray-100">
-            {discussions.map((discussion) => (
-                <li
-                    key={discussion.id}
-                    className="flex flex-wrap items-center justify-between gap-x-6 gap-y-4 py-5 sm:flex-nowrap"
-                >
-                    <div>
-                        <p className="text-sm/6 font-semibold text-gray-900">
-                            <a href={discussion.href} className="hover:underline">
-                                {discussion.title}
-                            </a>
-                        </p>
+            {projects.map((project) => (
+                <li key={project.id} className="flex items-center justify-between gap-x-6 py-5">
+                    <div className="min-w-0">
+                        <div className="flex items-start gap-x-3">
+                            <p className="text-sm/6 font-semibold text-gray-900">{project.name}</p>
+                            <p
+                                className={classNames(
+                                    statuses[project.status],
+                                    'mt-0.5 rounded-md px-1.5 py-0.5 text-xs font-medium whitespace-nowrap ring-1 ring-inset',
+                                )}
+                            >
+                                {project.status}
+                            </p>
+                        </div>
                         <div className="mt-1 flex items-center gap-x-2 text-xs/5 text-gray-500">
-                            <p>
-                                <a href={discussion.author.href} className="hover:underline">
-                                    {discussion.author.name}
-                                </a>
+                            <p className="whitespace-nowrap">
+                                Created on <time dateTime={project.dueDateTime}>{project.dueDate}</time>
                             </p>
                             <svg viewBox="0 0 2 2" className="size-0.5 fill-current">
                                 <circle r={1} cx={1} cy={1} />
                             </svg>
-                            <p>
-                                <time dateTime={discussion.dateTime}>{discussion.date}</time>
-                            </p>
+                            <p className="truncate">{project.createdBy}</p>
                         </div>
                     </div>
-                    <dl className="flex w-full flex-none justify-between gap-x-8 sm:w-auto">
-                        <div className="flex -space-x-0.5">
-                            <dt className="sr-only">Commenters</dt>
-                            {discussion.commenters.map((commenter) => (
-                                <dd key={commenter.id}>
-                                    <img
-                                        alt={commenter.name}
-                                        src={commenter.imageUrl}
-                                        className="size-6 rounded-full bg-gray-50 ring-2 ring-white"
-                                    />
-                                </dd>
-                            ))}
-                        </div>
-                        <div className="flex w-16 gap-x-2.5">
-                            <dt>
-                                <span className="sr-only">Total comments</span>
-                                {discussion.status === 'resolved' ? (
-                                    <CheckCircleIcon aria-hidden="true" className="size-6 text-gray-400" />
-                                ) : (
-                                    <ChatBubbleLeftIcon aria-hidden="true" className="size-6 text-gray-400" />
-                                )}
-                            </dt>
-                            <dd className="text-sm/6 text-gray-900">{discussion.totalComments}</dd>
-                        </div>
-                    </dl>
+                    <div className="flex flex-none items-center gap-x-4">
+                        <a
+                            href={`/releases/3`}
+                            className="hidden rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-primary-700 shadow-xs ring-1 ring-gray-300 ring-inset hover:bg-gray-50 sm:block"
+                        >
+                            View details<span className="sr-only">, {project.name}</span>
+                        </a>
+                        <Menu as="div" className="relative flex-none">
+                            <MenuButton className="-m-2.5 block p-2.5 text-gray-500 hover:text-gray-900">
+                                <span className="sr-only">Open options</span>
+                                <EllipsisVerticalIcon aria-hidden="true" className="size-5" />
+                            </MenuButton>
+                            <MenuItems
+                                transition
+                                className="absolute right-0 z-10 mt-2 w-32 origin-top-right rounded-md bg-white py-2 shadow-lg ring-1 ring-gray-900/5 transition focus:outline-hidden data-closed:scale-95 data-closed:transform data-closed:opacity-0 data-enter:duration-100 data-enter:ease-out data-leave:duration-75 data-leave:ease-in"
+                            >
+                                <MenuItem>
+                                    <a
+                                        href="#"
+                                        className="block px-3 py-1 text-sm/6 text-gray-900 data-focus:bg-gray-50 data-focus:outline-hidden"
+                                    >
+                                        Edit<span className="sr-only">, {project.name}</span>
+                                    </a>
+                                </MenuItem>
+                                <MenuItem>
+                                    <a
+                                        href="#"
+                                        className="block px-3 py-1 text-sm/6 text-gray-900 data-focus:bg-gray-50 data-focus:outline-hidden"
+                                    >
+                                        Move<span className="sr-only">, {project.name}</span>
+                                    </a>
+                                </MenuItem>
+                                <MenuItem>
+                                    <a
+                                        href="#"
+                                        className="block px-3 py-1 text-sm/6 text-gray-900 data-focus:bg-gray-50 data-focus:outline-hidden"
+                                    >
+                                        Delete<span className="sr-only">, {project.name}</span>
+                                    </a>
+                                </MenuItem>
+                            </MenuItems>
+                        </Menu>
+                    </div>
                 </li>
             ))}
         </ul>

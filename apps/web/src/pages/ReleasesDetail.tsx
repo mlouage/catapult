@@ -1,10 +1,10 @@
 import Title from "../components/Title";
 import ReleasesList from "../components/ReleasesList.tsx";
 
-export default function Releases() {
+export default function ReleasesDetail() {
   return (
     <div>
-      <Title title="Releases" description="See what will be released with the next deployment" />
+      <Title title="Release detail" description="See what will be released with the next deployment" />
       <ReleasesList />
     </div>
   )

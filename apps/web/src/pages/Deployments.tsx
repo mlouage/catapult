@@ -4,7 +4,7 @@ import Title from "../components/Title";
 export default function Deployments() {
   return (
     <>
-      <Title title="Deployments" />
+      <Title title="Deployments" description="See the latest deployment on GitHub" />
       <DeploymentList />
     </>
   )

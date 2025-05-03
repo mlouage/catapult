@@ -1,8 +1,11 @@
+import Title from "../components/Title.tsx";
+import ProfileSettings from "../components/ProfileSettings.tsx";
+
 export default function Settings() {
   return (
     <div>
-      <h1 className="text-2xl font-semibold text-gray-900">Settings</h1>
-      <p>Here you can modify your settings.</p>
+        <Title title="Settings" description="Modify your settings" />
+        <ProfileSettings />
     </div>
   )
 }

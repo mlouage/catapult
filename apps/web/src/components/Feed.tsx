@@ -3,11 +3,21 @@
 import { CheckCircleIcon } from '@heroicons/react/24/solid'
 
 const activity = [
-  { id: 1, type: 'created', person: { name: 'Chelsea Hagon' }, date: '7d ago', dateTime: '2023-01-23T10:32' },
-  { id: 2, type: 'edited', person: { name: 'Chelsea Hagon' }, date: '6d ago', dateTime: '2023-01-23T11:03' },
-  { id: 3, type: 'sent', person: { name: 'Chelsea Hagon' }, date: '6d ago', dateTime: '2023-01-23T11:24' },
-  { id: 5, type: 'viewed', person: { name: 'Alex Curren' }, date: '2d ago', dateTime: '2023-01-24T09:12' },
-  { id: 6, type: 'paid', person: { name: 'Alex Curren' }, date: '1d ago', dateTime: '2023-01-24T09:20' },
+  { id: 1, type: 'published', person: { name: 'Chelsea Hagon' }, date: '7d ago', dateTime: '2023-01-23T10:32' },
+  { id: 2, type: 'published', person: { name: 'Chelsea Hagon' }, date: '6d ago', dateTime: '2023-01-23T11:03' },
+  { id: 3, type: 'published', person: { name: 'Chelsea Hagon' }, date: '6d ago', dateTime: '2023-01-23T11:24' },
+  { id: 5, type: 'published', person: { name: 'Alex Curren' }, date: '2d ago', dateTime: '2023-01-24T09:12' },
+  { id: 6, type: 'published', person: { name: 'Alex Curren' }, date: '1d ago', dateTime: '2023-01-24T09:20' },
+  { id: 7, type: 'published', person: { name: 'Chelsea Hagon' }, date: '7d ago', dateTime: '2023-01-23T10:32' },
+  { id: 8, type: 'deployed', person: { name: 'Chelsea Hagon' }, date: '6d ago', dateTime: '2023-01-23T11:03' },
+  { id: 9, type: 'deployed', person: { name: 'Chelsea Hagon' }, date: '6d ago', dateTime: '2023-01-23T11:24' },
+  { id: 10, type: 'deployed', person: { name: 'Alex Curren' }, date: '2d ago', dateTime: '2023-01-24T09:12' },
+  { id: 11, type: 'deployed', person: { name: 'Alex Curren' }, date: '1d ago', dateTime: '2023-01-24T09:20' },
+  { id: 12, type: 'deployed', person: { name: 'Chelsea Hagon' }, date: '7d ago', dateTime: '2023-01-23T10:32' },
+  { id: 13, type: 'deployed', person: { name: 'Chelsea Hagon' }, date: '6d ago', dateTime: '2023-01-23T11:03' },
+  { id: 14, type: 'deployed', person: { name: 'Chelsea Hagon' }, date: '6d ago', dateTime: '2023-01-23T11:24' },
+  { id: 15, type: 'deployed', person: { name: 'Alex Curren' }, date: '2d ago', dateTime: '2023-01-24T09:12' },
+  { id: 16, type: 'deployed', person: { name: 'Alex Curren' }, date: '1d ago', dateTime: '2023-01-24T09:20' },
 ]
 
 function classNames(...classes: string[]) {
@@ -31,7 +41,7 @@ export default function Feed() {
             </div>
               <>
                 <div className="relative flex size-6 flex-none items-center justify-center bg-white">
-                  {activityItem.type === 'paid' ? (
+                  {activityItem.type === 'deployed' ? (
                     <CheckCircleIcon aria-hidden="true" className="size-6 text-primary-600" />
                   ) : (
                     <div className="size-1.5 rounded-full bg-gray-100 ring-1 ring-gray-300" />

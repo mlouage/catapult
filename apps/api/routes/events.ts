@@ -29,12 +29,12 @@ app.post('/', async (c) => {
             const newRelease = await db.insert(releasesTable).values({
                 title: `Release ${new Date().toISOString().split('T')[0]}`, // Default title
                 status: 'open',
-            }).returning({ id: releasesTable.id });
+            }).returning();
 
             if (!newRelease || newRelease.length === 0) {
                  throw new Error('Failed to create a new release.');
             }
-            openRelease = newRelease[0]; // Use the newly created release
+            openRelease = newRelease[0];
             console.log(`Created new release with ID: ${openRelease?.id}`);
         } else {
              console.log(`Found open release ${openRelease.title}`);

@@ -10,6 +10,7 @@ import TeamDetail from './pages/TeamDetail'
 import Profile from './pages/Profile'
 import Logout from './pages/Logout'
 import Login from './pages/Login'
+import ReleasesDetail from './pages/ReleasesDetail'
 
 function App() {
 
@@ -23,6 +24,7 @@ function App() {
           <Route path="team" element={<Team />} />
           <Route path="deployments" element={<Deployments />} />
           <Route path="releases" element={<Releases />} />
+          <Route path="releases/:releaseId" element={<ReleasesDetail />} />
           <Route path="reports" element={<Reports />} />
           <Route path="settings" element={<Settings />} />
           <Route path="teams/:teamSlug" element={<TeamDetail />} />
