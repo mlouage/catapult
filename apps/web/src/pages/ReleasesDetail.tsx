@@ -48,7 +48,7 @@ export default function ReleasesDetail() {
                     </div>
                 )}
 
-                <EntryList />
+                {data && <EntryList events={data.webhooks} />}
             </div>
         </div>
     )
