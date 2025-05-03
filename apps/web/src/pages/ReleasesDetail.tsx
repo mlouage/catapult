@@ -4,6 +4,7 @@ import { InteractionStatus } from "@azure/msal-browser"
 import Title from '../components/Title'
 import { useProtectedApi } from '../hooks/useProtectedApi'
 import { useEffect } from "react";
+import EntryList from '../components/EntryList'
 
 export default function ReleasesDetail() {
     const { releaseId: releaseIdStr } = useParams();
@@ -47,14 +48,7 @@ export default function ReleasesDetail() {
                     </div>
                 )}
 
-                {data && (
-                    <div className="mt-4 border border-gray-200 rounded-md p-4">
-                        <h3 className="font-medium mb-2">Data:</h3>
-                        <pre className="bg-gray-50 p-3 rounded overflow-x-auto text-sm">
-                            {JSON.stringify(data, null, 2)}
-                        </pre>
-                    </div>
-                )}
+                <EntryList />
             </div>
         </div>
     )
