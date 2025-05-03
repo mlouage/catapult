@@ -1,4 +1,6 @@
 // Define the type for the events that will be passed as props
+import {Link} from "react-router-dom";
+
 interface Event {
   id: number;
   receivedAt: string;
@@ -51,7 +53,6 @@ export default function EntryList({ events = [] }: EntryListProps) {
             <li key={event.id} className="flex items-center justify-between gap-x-6 py-5">
               <div className="min-w-0">
                 <div className="flex items-start gap-x-3">
-
                   <p
                       className={classNames(
                           models[event.model],
@@ -60,7 +61,9 @@ export default function EntryList({ events = [] }: EntryListProps) {
                   >
                     {event.model}
                   </p>
-                  <p className="text-sm/6 font-semibold text-gray-900">{event.entryTitle ?? event.documentId}</p>
+                  <Link to={`/entry/${event.id}`}>
+                    <p className="text-sm/6 font-semibold text-gray-900">{event.entryTitle ?? event.documentId}</p>
+                  </Link>
                 </div>
                 <div className="mt-1 flex items-center gap-x-2 text-xs/5 text-gray-500">
                   <p className="whitespace-nowrap">

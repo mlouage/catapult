@@ -61,6 +61,18 @@ app.post('/', async (c) => {
             releaseId: openRelease?.id,
         };
 
+        if (dataToInsert.model === 'page') {
+            dataToInsert.entryTitle = entryData.title_website;
+        }
+
+        if (dataToInsert.model === 'author') {
+            dataToInsert.entryTitle = entryData.firstname + ' ' + entryData.lastname;
+        }
+
+        if (dataToInsert.model === 'global-setting') {
+            dataToInsert.entryTitle = entryData.site;
+        }
+
         console.log('Inserting webhook data into database...');
         await db.insert(eventsTable).values(dataToInsert);
         console.log(`✅ Successfully inserted webhook data for entry ID: ${entryData.id}`);

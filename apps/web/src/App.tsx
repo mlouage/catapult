@@ -11,6 +11,7 @@ import Profile from './pages/Profile'
 import Logout from './pages/Logout'
 import Login from './pages/Login'
 import ReleasesDetail from './pages/ReleasesDetail'
+import Entry from "./pages/Entry.tsx";
 
 function App() {
 
@@ -30,6 +31,7 @@ function App() {
           <Route path="teams/:teamSlug" element={<TeamDetail />} />
           <Route path="profile" element={<Profile />} />
           <Route path="logout" element={<Logout />} />
+          <Route path="entry/:entryId" element={<Entry />} />
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
