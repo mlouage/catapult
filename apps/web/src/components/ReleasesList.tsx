@@ -1,5 +1,6 @@
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react'
 import { EllipsisVerticalIcon } from '@heroicons/react/20/solid'
+import {Link} from "react-router-dom";
 
 const statuses = {
     Open: 'text-green-700 bg-green-50 ring-green-600/20',
@@ -130,12 +131,13 @@ export default function ReleasesList() {
                         </div>
                     </div>
                     <div className="flex flex-none items-center gap-x-4">
-                        <a
-                            href={`/releases/3`}
+                        <Link
+                            to={`/releases/3`} // Hardcoded 'to' for now
                             className="hidden rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-primary-700 shadow-xs ring-1 ring-gray-300 ring-inset hover:bg-gray-50 sm:block"
                         >
-                            View details<span className="sr-only">, {project.name}</span>
-                        </a>
+
+                        View details<span className="sr-only">, {project.name}</span>
+                        </Link>
                         <Menu as="div" className="relative flex-none">
                             <MenuButton className="-m-2.5 block p-2.5 text-gray-500 hover:text-gray-900">
                                 <span className="sr-only">Open options</span>

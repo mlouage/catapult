@@ -23,8 +23,8 @@ function App() {
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="team" element={<Team />} />
           <Route path="deployments" element={<Deployments />} />
-          <Route path="releases" element={<Releases />} />
           <Route path="releases/:releaseId" element={<ReleasesDetail />} />
+          <Route path="releases" element={<Releases />} />
           <Route path="reports" element={<Reports />} />
           <Route path="settings" element={<Settings />} />
           <Route path="teams/:teamSlug" element={<TeamDetail />} />
