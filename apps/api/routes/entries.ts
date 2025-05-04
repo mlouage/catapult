@@ -1,10 +1,27 @@
 import { Hono } from 'hono'
 import { db } from '../db/index.js';
 import { eventsTable } from '../db/schema.js';
-import { eq } from 'drizzle-orm';
+import { eq, and, gte, desc } from 'drizzle-orm';
 import { HTTPException } from 'hono/http-exception';
 
 const app = new Hono()
+
+app.get('/', async (c) => {
+  // Calculate date 30 days ago
+  const thirtyDaysAgo = new Date();
+  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+  // Query events from the last 30 days, limited to 30 items
+  const entries = await db.query.eventsTable.findMany({
+    where: and(
+      gte(eventsTable.receivedAt, thirtyDaysAgo)
+    ),
+    orderBy: [desc(eventsTable.receivedAt)],
+    limit: 30
+  });
+
+  return c.json(entries);
+});
 
 app.get('/:id', async (c) => {
   const id = parseInt(c.req.param('id'), 10);
