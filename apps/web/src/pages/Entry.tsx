@@ -26,7 +26,7 @@ export default function Entry() {
         if (accounts.length > 0) {
             loadData()
         }
-    }, [accounts, entryIdStr])
+    }, [accounts, entryIdStr, entryId])
 
     return (
         <div>

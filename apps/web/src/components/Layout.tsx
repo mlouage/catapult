@@ -8,6 +8,7 @@ import { HomeIcon, FolderIcon, DocumentDuplicateIcon, Cog6ToothIcon, Bars3Icon, 
 import { ChevronDownIcon } from '@heroicons/react/20/solid'
 
 import Logo from '../assets/symbol-xprtz.svg'
+import Breadcrumbs from "./Breadcrumbs.tsx";
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(' ')
@@ -326,6 +327,7 @@ export default function Layout() {
           <div className="px-4 sm:px-6 lg:px-8">
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
               <div className="mx-auto max-w-4xl">
+                <Breadcrumbs />
                 <Outlet />
               </div>
             </div>
