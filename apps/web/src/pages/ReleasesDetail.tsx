@@ -9,25 +9,24 @@ import EntryList from '../components/EntryList'
 export default function ReleasesDetail() {
     const { releaseId: releaseIdStr } = useParams();
     const releaseId = parseInt(releaseIdStr ?? '', 10);
-
-    if (isNaN(releaseId)) {
-        console.error("Invalid release ID:", releaseIdStr);
-
-        return <Navigate to="/releases" replace />;
-    }
-
     const { accounts, inProgress } = useMsal()
     const { data, error, loading, fetchData } = useProtectedApi()
+    const isValidId = !isNaN(releaseId);
 
-    const loadData = async () => {
-        await fetchData(`/api/releases/${releaseId}`)
-    }
-
+    // All hooks must be called before any conditional returns
     useEffect(() => {
-        if (accounts.length > 0) {
-            loadData()
+        // Only fetch if we have a valid ID and accounts
+        if (isValidId && accounts.length > 0) {
+            fetchData(`/api/releases/${releaseId}`);
         }
-    }, [accounts, releaseIdStr])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []); // Using empty dependency array like Feed.tsx
+
+    // After all hooks are called, we can have conditional rendering
+    if (!isValidId) {
+        console.error("Invalid release ID:", releaseIdStr);
+        return <Navigate to="/releases" replace />;
+    }
 
     return (
         <div>

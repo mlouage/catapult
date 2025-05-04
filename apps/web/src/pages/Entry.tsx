@@ -8,25 +8,24 @@ import {InteractionStatus} from "@azure/msal-browser";
 export default function Entry() {
     const {entryId: entryIdStr} = useParams();
     const entryId = parseInt(entryIdStr ?? '', 10);
+    const {inProgress} = useMsal();
+    const {data, error, loading, fetchData} = useProtectedApi();
+    const isValidId = !isNaN(entryId);
 
-    if (isNaN(entryId)) {
+    // All hooks must be called before any conditional returns
+    useEffect(() => {
+        // Only fetch if we have a valid ID
+        if (isValidId) {
+            fetchData(`/api/entries/${entryId}`);
+        }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
+    // After all hooks are called, you can have conditional rendering
+    if (!isValidId) {
         console.error("Invalid entry ID:", entryIdStr);
-
         return <Navigate to="/" replace/>;
     }
-
-    const {accounts, inProgress} = useMsal()
-    const {data, error, loading, fetchData} = useProtectedApi()
-
-    const loadData = async () => {
-        await fetchData(`/api/entries/${entryId}`)
-    }
-
-    useEffect(() => {
-        if (accounts.length > 0) {
-            loadData()
-        }
-    }, [accounts, entryIdStr, entryId])
 
     return (
         <div>
@@ -51,7 +50,6 @@ export default function Entry() {
                         {JSON.stringify(data, null, 2)}
                     </pre>}
             </div>
-
         </div>
-    )
+    );
 }

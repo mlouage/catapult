@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useMsal, useIsAuthenticated } from "@azure/msal-react";
 import { InteractionStatus, InteractionRequiredAuthError } from "@azure/msal-browser";
 import { apiRequest } from '../authConfig';
@@ -22,11 +22,32 @@ export function useProtectedApi<T = any>(): UseProtectedApiReturn<T> {
   const [data, setData] = useState<T | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
+  
+  // Use useCallback to memoize the fetchData function to prevent it from changing on each render
+  const fetchData = React.useCallback(async (url: string, options: FetchOptions = {}) => {
+    console.log(`Starting API fetch for ${url}...`);
+    // We'll manage loading state inside the callback rather than accessing the loading state directly
+    // This avoids adding it to the dependency array which would cause issues
+    let isCurrentlyLoading = false;
+    
+    // Function to safely check loading status
+    const checkAndSetLoading = () => {
+      if (isCurrentlyLoading) {
+        console.log(`Skipping duplicate API fetch for ${url} - already loading`);
+        return true;
+      }
+      isCurrentlyLoading = true;
+      setLoading(true);
+      return false;
+    };
+    
+    // Check if we should skip this fetch
+    if (checkAndSetLoading()) {
+      return;
+    }
 
-  const fetchData = async (url: string, options: FetchOptions = {}) => {
     setError(null);
     setData(null);
-    setLoading(true);
 
     try {
       // Ensure user is authenticated and we have account info
@@ -109,7 +130,7 @@ export function useProtectedApi<T = any>(): UseProtectedApiReturn<T> {
     } finally {
       setLoading(false);
     }
-  };
+  }, [instance, accounts, isAuthenticated, setData, setError, setLoading]);
 
   return { data, error, loading, fetchData };
 }
