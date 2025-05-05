@@ -10,19 +10,37 @@ import releases from './routes/releases.js'
 import deployments from './routes/deployments.js'
 import entries from './routes/entries.js'
 import events from './routes/events.js'
+import { serveStatic } from '@hono/node-server/serve-static';
 
-const app = new Hono().basePath('/api')
+// Determine if running in production
+const isProduction = process.env.NODE_ENV === 'production'
 
-app.use('*', logger())
-app.use('/events/*', verifyWebhook)
+// Root application
+const app = new Hono()
 
-app.use('/releases/*', protect)
-app.route('/releases', releases)
-app.use('/entries/*', protect)
-app.route('/entries', entries)
-app.route('/deployments', deployments)
-app.route('/events', events)
+// API sub-application
+const api = new Hono()
 
+// Attach API middlewares and routes
+api.use('*', logger())
+api.use('/events/*', verifyWebhook)
+api.use('/releases/*', protect)
+api.route('/releases', releases)
+api.use('/entries/*', protect)
+api.route('/entries', entries)
+api.route('/deployments', deployments)
+api.route('/events', events)
+
+// Mount API under /api
+app.route('/api', api)
+
+// Serve frontend static files only in production
+if (isProduction) {
+  // Use 'root' to point to the public directory for static assets
+  app.use('*', serveStatic({ root: './public' }))
+}
+
+// Start server
 serve({
   fetch: app.fetch,
   port: 3000

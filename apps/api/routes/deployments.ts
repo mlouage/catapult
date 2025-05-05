@@ -32,13 +32,12 @@ export async function triggerGitHubAction(environment: 'preview' | 'production',
 app.get('/', async (c) => {
   const environment = c.req.query('environment');
 
-  let query = db.select().from(deploymentsTable);
-
-  if (environment === 'preview' || environment === 'production') {
-    query = query.where(eq(deploymentsTable.environment, environment));
-  }
-
-  const deployments = await query.orderBy(desc(deploymentsTable.deployedAt));
+  // Build query based on environment filter
+  const deployments = await (
+    (environment === 'preview' || environment === 'production')
+      ? db.select().from(deploymentsTable).where(eq(deploymentsTable.environment, environment))
+      : db.select().from(deploymentsTable)
+  ).orderBy(desc(deploymentsTable.deployedAt));
 
   return c.json(deployments);
 })
@@ -149,7 +148,15 @@ app.post('/:id/deploy-to-production', async (c) => {
   }
 
   // Get the triggeredBy from the request body or use a default
-  const { triggeredBy = 'Editor' } = await c.req.json<{ triggeredBy?: string }>().catch(() => ({}));
+  let triggeredBy: string = 'Editor';
+  try {
+    const body = await c.req.json<{ triggeredBy?: string }>();
+    if (body.triggeredBy) {
+      triggeredBy = body.triggeredBy;
+    }
+  } catch {
+    // ignore parse errors and use default
+  }
 
   // Trigger a production deployment
   try {

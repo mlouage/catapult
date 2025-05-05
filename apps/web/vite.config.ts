@@ -13,4 +13,9 @@ export default defineConfig({
       },
     },
   },
+  // Build options for production
+  build: {
+    // Target environment that supports top-level await
+    target: 'esnext',
+  },
 })

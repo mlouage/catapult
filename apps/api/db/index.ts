@@ -17,12 +17,8 @@ const encodedDbPassword = encodeURIComponent(dbPassword);
 
 const databaseUrl = `postgresql://${dbUser}:${encodedDbPassword}@${dbHost}:${dbPort}/${dbName}`;
 
-// Create the connection pool
-const pool = postgres(databaseUrl, {
-    // --- Add search_path option here ---
-    search_path: dbSchema, // Use the schema variable
-    // --- End add ---
-});
+// Create the connection pool (default uses backend's search_path)
+const pool = postgres(databaseUrl);
 
 // Create the Drizzle instance with the schema
 export const db = drizzle(pool, { schema });

@@ -23,9 +23,9 @@ const databaseUrl = `postgresql://${dbUser}:${encodedDbPassword}@${dbHost}:${dbP
 const runMigrate = async () => {
   console.log('🚀 Starting database migration...');
 
+  // Create migration connection (schema set via migrations scripts or URL parameters)
   const migrationConnection = postgres(databaseUrl, {
       max: 1,
-      search_path: dbSchema,
   });
   
   const migrationDb = drizzle(migrationConnection);

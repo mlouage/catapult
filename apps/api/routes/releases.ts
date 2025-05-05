@@ -9,15 +9,14 @@ const app = new Hono()
 app.get('/', async (c) => {
   const status = c.req.query('status');
 
-  let query = db.select().from(releasesTable);
-
-  if (status === 'open') {
-      query = query.where(eq(releasesTable.status, 'open'));
-  } else if (status === 'closed') {
-      query = query.where(eq(releasesTable.status, 'closed'));
-  }
-
-  const releases = await query.orderBy(desc(releasesTable.createdAt));
+  // Build query based on status filter
+  const releases = await (
+    status === 'open'
+      ? db.select().from(releasesTable).where(eq(releasesTable.status, 'open'))
+      : status === 'closed'
+        ? db.select().from(releasesTable).where(eq(releasesTable.status, 'closed'))
+        : db.select().from(releasesTable)
+  ).orderBy(desc(releasesTable.createdAt));
 
   return c.json(releases);
 });
