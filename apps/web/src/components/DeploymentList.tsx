@@ -1,180 +1,163 @@
-import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react'
-import { EllipsisVerticalIcon } from '@heroicons/react/20/solid'
+import { useEffect, useState } from 'react';
+import { useProtectedApi } from '../hooks/useProtectedApi';
+
+// Define the Deployment interface based on the API response
+interface Deployment {
+  id: number;
+  name: string;
+  status: 'completed' | 'failed' | 'in_progress';
+  environment: 'preview' | 'production';
+  githubActionUrl: string;
+  triggeredBy: string;
+  deployedAt: string;
+  releaseId: number | null;
+}
 
 const statuses = {
-  Completed: 'text-green-700 bg-green-50 ring-green-600/20',
-  Failed: 'text-red-800 bg-red-50 ring-red-600/20',
+  completed: 'text-green-700 bg-green-50 ring-green-600/20',
+  failed: 'text-red-800 bg-red-50 ring-red-600/20',
+  in_progress: 'text-yellow-700 bg-yellow-50 ring-yellow-600/20',
 }
-const projects = [
-  {
-    id: 1,
-    name: 'GraphQL API',
-    href: '#',
-    status: 'Completed',
-    createdBy: 'Leslie Alexander',
-    dueDate: 'March 17, 2023',
-    dueDateTime: '2023-03-17T00:00Z',
-  },
-  {
-    id: 2,
-    name: 'New benefits plan',
-    href: '#',
-    status: 'Completed',
-    createdBy: 'Leslie Alexander',
-    dueDate: 'May 5, 2023',
-    dueDateTime: '2023-05-05T00:00Z',
-  },
-  {
-    id: 3,
-    name: 'Onboarding emails',
-    href: '#',
-    status: 'Failed',
-    createdBy: 'Courtney Henry',
-    dueDate: 'May 25, 2023',
-    dueDateTime: '2023-05-25T00:00Z',
-  },
-  {
-    id: 4,
-    name: 'iOS app',
-    href: '#',
-    status: 'Completed',
-    createdBy: 'Leonard Krasner',
-    dueDate: 'June 7, 2023',
-    dueDateTime: '2023-06-07T00:00Z',
-  },
-  {
-    id: 5,
-    name: 'Marketing site redesign',
-    href: '#',
-    status: 'Completed',
-    createdBy: 'Courtney Henry',
-    dueDate: 'June 10, 2023',
-    dueDateTime: '2023-06-10T00:00Z',
-  },
-  {
-    id: 6,
-    name: 'GraphQL API',
-    href: '#',
-    status: 'Completed',
-    createdBy: 'Leslie Alexander',
-    dueDate: 'March 17, 2023',
-    dueDateTime: '2023-03-17T00:00Z',
-  },
-  {
-    id: 7,
-    name: 'New benefits plan',
-    href: '#',
-    status: 'Completed',
-    createdBy: 'Leslie Alexander',
-    dueDate: 'May 5, 2023',
-    dueDateTime: '2023-05-05T00:00Z',
-  },
-  {
-    id: 8,
-    name: 'Onboarding emails',
-    href: '#',
-    status: 'Failed',
-    createdBy: 'Courtney Henry',
-    dueDate: 'May 25, 2023',
-    dueDateTime: '2023-05-25T00:00Z',
-  },
-  {
-    id: 9,
-    name: 'iOS app',
-    href: '#',
-    status: 'Completed',
-    createdBy: 'Leonard Krasner',
-    dueDate: 'June 7, 2023',
-    dueDateTime: '2023-06-07T00:00Z',
-  },
-  {
-    id: 10,
-    name: 'Marketing site redesign',
-    href: '#',
-    status: 'Completed',
-    createdBy: 'Courtney Henry',
-    dueDate: 'June 10, 2023',
-    dueDateTime: '2023-06-10T00:00Z',
-  },
-]
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(' ')
 }
 
+function formatDate(dateString: string): string {
+  const date = new Date(dateString);
+  return date.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
+}
+
 export default function DeploymentList() {
+  const { data: deployments, error, loading, fetchData } = useProtectedApi<Deployment[]>();
+  const [deployingToProduction, setDeployingToProduction] = useState<number | null>(null);
+  const [deploymentError, setDeploymentError] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetchData('/api/deployments');
+  }, [fetchData]);
+
+  // Check if a release is already deployed to production
+  const isReleaseDeployedToProduction = (releaseId: number | null): boolean => {
+    if (!releaseId || !deployments) return false;
+
+    return deployments.some(
+      deployment => 
+        deployment.releaseId === releaseId && 
+        deployment.environment === 'production' && 
+        deployment.status === 'completed'
+    );
+  };
+
+  const handleDeployToProduction = async (deploymentId: number) => {
+    setDeployingToProduction(deploymentId);
+    setDeploymentError(null);
+
+    try {
+      await fetchData(`/api/deployments/${deploymentId}/deploy-to-production`, {
+        method: 'POST',
+        body: { triggeredBy: 'Editor' }, // In a real app, this would be the current user's name
+      });
+
+      // Refresh the deployments list
+      await fetchData('/api/deployments');
+    } catch (error: any) {
+      setDeploymentError(`Failed to deploy to production: ${error.message}`);
+    } finally {
+      setDeployingToProduction(null);
+    }
+  };
+
+  if (loading && !deployments) {
+    return <div className="py-4 text-center">Loading deployments...</div>;
+  }
+
+  if (error) {
+    return <div className="py-4 text-center text-red-600">Error: {error}</div>;
+  }
+
+  if (!deployments || deployments.length === 0) {
+    return <div className="py-4 text-center">No deployments found.</div>;
+  }
+
   return (
+    <>
+      {deploymentError && (
+        <div className="mb-4 p-4 bg-red-50 text-red-700 rounded-md">
+          {deploymentError}
+        </div>
+      )}
+
       <ul role="list" className="divide-y divide-gray-100">
-        {projects.map((project) => (
-            <li key={project.id} className="flex items-center justify-between gap-x-6 py-5">
-              <div className="min-w-0">
-                <div className="flex items-start gap-x-3">
-                  <p className="text-sm/6 font-semibold text-gray-900">{project.name}</p>
-                  <p
-                      className={classNames(
-                          statuses[project.status],
-                          'mt-0.5 rounded-md px-1.5 py-0.5 text-xs font-medium whitespace-nowrap ring-1 ring-inset',
-                      )}
-                  >
-                    {project.status}
-                  </p>
-                </div>
-                <div className="mt-1 flex items-center gap-x-2 text-xs/5 text-gray-500">
-                  <p className="whitespace-nowrap">
-                    Deployed on <time dateTime={project.dueDateTime}>{project.dueDate}</time>
-                  </p>
-                  <svg viewBox="0 0 2 2" className="size-0.5 fill-current">
-                    <circle r={1} cx={1} cy={1} />
-                  </svg>
-                  <p className="truncate">{project.createdBy}</p>
-                </div>
-              </div>
-              <div className="flex flex-none items-center gap-x-4">
-                <a
-                    href={project.href}
-                    className="hidden rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-primary-700 shadow-xs ring-1 ring-gray-300 ring-inset hover:bg-gray-50 sm:block"
+        {deployments.map((deployment) => (
+          <li key={deployment.id} className="flex items-center justify-between gap-x-6 py-5">
+            <div className="min-w-0">
+              <div className="flex items-start gap-x-3">
+                <p className="text-sm/6 font-semibold text-gray-900">{deployment.name}</p>
+                <p
+                  className={classNames(
+                    statuses[deployment.status],
+                    'mt-0.5 rounded-md px-1.5 py-0.5 text-xs font-medium whitespace-nowrap ring-1 ring-inset capitalize',
+                  )}
                 >
-                  View deployment<span className="sr-only">, {project.name}</span>
-                </a>
+                  {deployment.status.replace('_', ' ')}
+                </p>
+                <p
+                  className="mt-0.5 rounded-md px-1.5 py-0.5 text-xs font-medium whitespace-nowrap ring-1 ring-inset bg-blue-50 text-blue-700 ring-blue-600/20 capitalize"
+                >
+                  {deployment.environment}
+                </p>
               </div>
-              {/*  <Menu as="div" className="relative flex-none">*/}
-              {/*    <MenuButton className="-m-2.5 block p-2.5 text-gray-500 hover:text-gray-900">*/}
-              {/*      <span className="sr-only">Open options</span>*/}
-              {/*      <EllipsisVerticalIcon aria-hidden="true" className="size-5" />*/}
-              {/*    </MenuButton>*/}
-              {/*    <MenuItems*/}
-              {/*        transition*/}
-              {/*        className="absolute right-0 z-10 mt-2 w-32 origin-top-right rounded-md bg-white py-2 shadow-lg ring-1 ring-gray-900/5 transition focus:outline-hidden data-closed:scale-95 data-closed:transform data-closed:opacity-0 data-enter:duration-100 data-enter:ease-out data-leave:duration-75 data-leave:ease-in"*/}
-              {/*    >*/}
-              {/*      <MenuItem>*/}
-              {/*        <a*/}
-              {/*            href="#"*/}
-              {/*            className="block px-3 py-1 text-sm/6 text-gray-900 data-focus:bg-gray-50 data-focus:outline-hidden"*/}
-              {/*        >*/}
-              {/*          Edit<span className="sr-only">, {project.name}</span>*/}
-              {/*        </a>*/}
-              {/*      </MenuItem>*/}
-              {/*      <MenuItem>*/}
-              {/*        <a*/}
-              {/*            href="#"*/}
-              {/*            className="block px-3 py-1 text-sm/6 text-gray-900 data-focus:bg-gray-50 data-focus:outline-hidden"*/}
-              {/*        >*/}
-              {/*          Move<span className="sr-only">, {project.name}</span>*/}
-              {/*        </a>*/}
-              {/*      </MenuItem>*/}
-              {/*      <MenuItem>*/}
-              {/*        <a*/}
-              {/*            href="#"*/}
-              {/*            className="block px-3 py-1 text-sm/6 text-gray-900 data-focus:bg-gray-50 data-focus:outline-hidden"*/}
-              {/*        >*/}
-              {/*          Delete<span className="sr-only">, {project.name}</span>*/}
-              {/*        </a>*/}
-              {/*      </MenuItem>*/}
-              {/*    </MenuItems>*/}
-              {/*  </Menu>*/}
-              {/*</div>*/}
-            </li>
+              <div className="mt-1 flex items-center gap-x-2 text-xs/5 text-gray-500">
+                <p className="whitespace-nowrap">
+                  Deployed on <time dateTime={deployment.deployedAt}>{formatDate(deployment.deployedAt)}</time>
+                </p>
+                <svg viewBox="0 0 2 2" className="size-0.5 fill-current">
+                  <circle r={1} cx={1} cy={1} />
+                </svg>
+                <p className="truncate">{deployment.triggeredBy}</p>
+              </div>
+            </div>
+            <div className="flex flex-none items-center gap-x-4">
+              {/* Show deploy to production button for completed preview deployments */}
+              {deployment.environment === 'preview' && deployment.status === 'completed' && (
+                <button
+                  onClick={() => handleDeployToProduction(deployment.id)}
+                  disabled={deployingToProduction !== null || isReleaseDeployedToProduction(deployment.releaseId)}
+                  title={isReleaseDeployedToProduction(deployment.releaseId) 
+                    ? "This release is already deployed to production" 
+                    : "Deploy this preview to production"}
+                  className={classNames(
+                    "rounded-md px-2.5 py-1.5 text-sm font-semibold shadow-xs ring-1 ring-inset",
+                    deployingToProduction === deployment.id || isReleaseDeployedToProduction(deployment.releaseId)
+                      ? "bg-gray-100 text-gray-500 ring-gray-200 cursor-not-allowed"
+                      : "bg-green-50 text-green-700 ring-green-600/20 hover:bg-green-100"
+                  )}
+                >
+                  {deployingToProduction === deployment.id 
+                    ? 'Deploying...' 
+                    : isReleaseDeployedToProduction(deployment.releaseId)
+                      ? 'Already on Production'
+                      : 'Deploy to Production'}
+                </button>
+              )}
+
+              <a
+                href={deployment.githubActionUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hidden rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-primary-700 shadow-xs ring-1 ring-gray-300 ring-inset hover:bg-gray-50 sm:block"
+              >
+                View deployment<span className="sr-only">, {deployment.name}</span>
+              </a>
+            </div>
+          </li>
         ))}
       </ul>
+    </>
   )
 }

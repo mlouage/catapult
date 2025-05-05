@@ -1,7 +1,7 @@
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react'
 import { EllipsisVerticalIcon } from '@heroicons/react/20/solid'
 import { Link } from "react-router-dom";
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useProtectedApi } from '../hooks/useProtectedApi';
 
 // Define the Release interface based on the API response
@@ -25,11 +25,32 @@ function classNames(...classes: string[]) {
 
 export default function ReleasesList() {
     const { data, error, loading, fetchData } = useProtectedApi<Release[]>();
+    const [closingReleaseId, setClosingReleaseId] = useState<number | null>(null);
+    const [closeError, setCloseError] = useState<string | null>(null);
 
     useEffect(() => {
         // Fetch releases data when component mounts
         fetchData('/api/releases');
     }, []);
+
+    // Function to close a release
+    const handleCloseRelease = async (releaseId: number) => {
+        setClosingReleaseId(releaseId);
+        setCloseError(null);
+
+        try {
+            await fetchData(`/api/releases/${releaseId}/close`, {
+                method: 'POST'
+            });
+
+            // Refresh the releases list after closing
+            await fetchData('/api/releases');
+        } catch (error: any) {
+            setCloseError(`Failed to close release: ${error.message}`);
+        } finally {
+            setClosingReleaseId(null);
+        }
+    };
 
     // Format date to a more readable format
     const formatDate = (dateString: string) => {
@@ -37,7 +58,7 @@ export default function ReleasesList() {
         return date.toLocaleDateString('nl-NL', { year: 'numeric', month: 'long', day: 'numeric' });
     };
 
-    if (loading) {
+    if (loading && !data) {
         return <div className="py-10 text-center">Loading releases...</div>;
     }
 
@@ -50,80 +71,96 @@ export default function ReleasesList() {
     }
 
     return (
-        <ul role="list" className="divide-y divide-gray-100">
-            {data.map((release) => (
-                <li key={release.id} className="flex items-center justify-between gap-x-6 py-5">
-                    <div className="min-w-0">
-                        <div className="flex items-start gap-x-3">
-                            <p className="text-sm/6 font-semibold text-gray-900">{release.title}</p>
-                            <p
-                                className={classNames(
-                                    statuses[release.status],
-                                    'mt-0.5 rounded-md px-1.5 py-0.5 text-xs font-medium whitespace-nowrap ring-1 ring-inset capitalize',
-                                )}
-                            >
-                                {release.status}
-                            </p>
-                        </div>
-                        <div className="mt-1 flex items-center gap-x-2 text-xs/5 text-gray-500">
-                            <p className="whitespace-nowrap">
-                                Created on <time dateTime={release.createdAt}>{formatDate(release.createdAt)}</time>
-                            </p>
-                            {release.description && (
-                                <>
-                                    <svg viewBox="0 0 2 2" className="size-0.5 fill-current">
-                                        <circle r={1} cx={1} cy={1} />
-                                    </svg>
-                                    <p className="truncate">{release.description}</p>
-                                </>
-                            )}
-                        </div>
-                    </div>
-                    <div className="flex flex-none items-center gap-x-4">
-                        <Link
+        <>
+            {closeError && (
+                <div className="mb-4 p-4 bg-red-50 text-red-700 rounded-md">
+                    {closeError}
+                </div>
+            )}
+
+            {closingReleaseId !== null && (
+                <div className="mb-4 p-4 bg-blue-50 text-blue-700 rounded-md">
+                    Closing release... Please wait.
+                </div>
+            )}
+
+            <ul role="list" className="divide-y divide-gray-100">
+                {data.map((release) => (
+                    <li key={release.id} className="flex items-center justify-between gap-x-6 py-5 group">
+                        <Link 
                             to={`/releases/${release.id}`}
-                            className="hidden rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-primary-700 shadow-xs ring-1 ring-gray-300 ring-inset hover:bg-gray-50 sm:block"
+                            className="flex-grow flex items-center justify-between gap-x-6 cursor-pointer p-4 hover:bg-gray-50 rounded-md group-hover:bg-gray-50"
                         >
-                            View details<span className="sr-only">, {release.title}</span>
+                            <div className="min-w-0">
+                                <div className="flex items-start gap-x-3">
+                                    <p className="text-sm/6 font-semibold text-gray-900">{release.title}</p>
+                                    <p
+                                        className={classNames(
+                                            statuses[release.status],
+                                            'mt-0.5 rounded-md px-1.5 py-0.5 text-xs font-medium whitespace-nowrap ring-1 ring-inset capitalize',
+                                        )}
+                                    >
+                                        {release.status}
+                                    </p>
+                                </div>
+                                <div className="mt-1 flex items-center gap-x-2 text-xs/5 text-gray-500">
+                                    <p className="whitespace-nowrap">
+                                        Created on <time dateTime={release.createdAt}>{formatDate(release.createdAt)}</time>
+                                    </p>
+                                    {release.description && (
+                                        <>
+                                            <svg viewBox="0 0 2 2" className="size-0.5 fill-current">
+                                                <circle r={1} cx={1} cy={1} />
+                                            </svg>
+                                            <p className="truncate">{release.description}</p>
+                                        </>
+                                    )}
+                                </div>
+                            </div>
                         </Link>
-                        <Menu as="div" className="relative flex-none">
-                            <MenuButton className="-m-2.5 block p-2.5 text-gray-500 hover:text-gray-900">
-                                <span className="sr-only">Open options</span>
-                                <EllipsisVerticalIcon aria-hidden="true" className="size-5" />
-                            </MenuButton>
-                            <MenuItems
-                                transition
-                                className="absolute right-0 z-10 mt-2 w-32 origin-top-right rounded-md bg-white py-2 shadow-lg ring-1 ring-gray-900/5 transition focus:outline-hidden data-closed:scale-95 data-closed:transform data-closed:opacity-0 data-enter:duration-100 data-enter:ease-out data-leave:duration-75 data-leave:ease-in"
-                            >
-                                <MenuItem>
-                                    <a
-                                        href="#"
-                                        className="block px-3 py-1 text-sm/6 text-gray-900 data-focus:bg-gray-50 data-focus:outline-hidden"
-                                    >
-                                        Edit<span className="sr-only">, {release.title}</span>
-                                    </a>
-                                </MenuItem>
-                                <MenuItem>
-                                    <a
-                                        href="#"
-                                        className="block px-3 py-1 text-sm/6 text-gray-900 data-focus:bg-gray-50 data-focus:outline-hidden"
-                                    >
-                                        Move<span className="sr-only">, {release.title}</span>
-                                    </a>
-                                </MenuItem>
-                                <MenuItem>
-                                    <a
-                                        href="#"
-                                        className="block px-3 py-1 text-sm/6 text-gray-900 data-focus:bg-gray-50 data-focus:outline-hidden"
-                                    >
-                                        Delete<span className="sr-only">, {release.title}</span>
-                                    </a>
-                                </MenuItem>
-                            </MenuItems>
-                        </Menu>
-                    </div>
-                </li>
-            ))}
-        </ul>
+                        <div className="flex flex-none items-center gap-x-4">
+                            <Menu as="div" className="relative flex-none">
+                                <MenuButton className="-m-2.5 block p-2.5 text-gray-500 hover:text-gray-900">
+                                    <span className="sr-only">Open options</span>
+                                    <EllipsisVerticalIcon aria-hidden="true" className="size-5" />
+                                </MenuButton>
+                                <MenuItems
+                                    transition
+                                    className="absolute right-0 z-10 mt-2 w-32 origin-top-right rounded-md bg-white py-2 shadow-lg ring-1 ring-gray-900/5 transition focus:outline-hidden data-closed:scale-95 data-closed:transform data-closed:opacity-0 data-enter:duration-100 data-enter:ease-out data-leave:duration-75 data-leave:ease-in"
+                                >
+                                    <MenuItem>
+                                        <a
+                                            href="#"
+                                            className="block px-3 py-1 text-sm/6 text-gray-900 data-focus:bg-gray-50 data-focus:outline-hidden"
+                                        >
+                                            Edit<span className="sr-only">, {release.title}</span>
+                                        </a>
+                                    </MenuItem>
+                                    {release.status === 'open' && (
+                                        <MenuItem>
+                                            <button
+                                                onClick={() => handleCloseRelease(release.id)}
+                                                disabled={closingReleaseId !== null}
+                                                className="block w-full text-left px-3 py-1 text-sm/6 text-gray-900 data-focus:bg-gray-50 data-focus:outline-hidden"
+                                            >
+                                                Close<span className="sr-only">, {release.title}</span>
+                                            </button>
+                                        </MenuItem>
+                                    )}
+                                    <MenuItem>
+                                        <a
+                                            href="#"
+                                            className="block px-3 py-1 text-sm/6 text-gray-900 data-focus:bg-gray-50 data-focus:outline-hidden"
+                                        >
+                                            Delete<span className="sr-only">, {release.title}</span>
+                                        </a>
+                                    </MenuItem>
+                                </MenuItems>
+                            </Menu>
+                        </div>
+                    </li>
+                ))}
+            </ul>
+        </>
     )
 }

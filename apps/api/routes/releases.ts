@@ -1,7 +1,7 @@
 import { Hono } from 'hono'
 import { db } from '../db/index.js';
-import { releasesTable } from '../db/schema.js';
-import { and, desc, eq } from 'drizzle-orm';
+import { releasesTable, eventsTable } from '../db/schema.js';
+import { and, desc, eq, sql } from 'drizzle-orm';
 import { HTTPException } from 'hono/http-exception';
 
 const app = new Hono()
@@ -59,13 +59,36 @@ app.get('/:id', async (c) => {
 
   let query = db.query.releasesTable.findFirst({
       where: eq(releasesTable.id, id),
-      with: { webhooks: true }
+      with: {
+          webhooks: {
+              // Order by receivedAt in descending order (most recent first)
+              orderBy: desc(eventsTable.receivedAt)
+          }
+      }
   });
 
   const release = await query;
 
   if (!release) {
       throw new HTTPException(404, { message: 'Release not found' });
+  }
+
+  // Post-process the webhooks to filter out duplicates
+  if (release.webhooks && release.webhooks.length > 0) {
+      const seen = new Set();
+      release.webhooks = release.webhooks.filter(webhook => {
+          // If documentId is null or undefined, keep it
+          if (!webhook.documentId) return true;
+
+          // If we haven't seen this documentId before, keep it
+          if (!seen.has(webhook.documentId)) {
+              seen.add(webhook.documentId);
+              return true;
+          }
+
+          // Otherwise, filter it out
+          return false;
+      });
   }
 
   return c.json(release);
@@ -104,6 +127,16 @@ app.post('/:id/close', async (c) => {
        throw new Error('Failed to update release status.');
   }
 
+  // Trigger a GitHub Action deployment for the preview environment
+  try {
+    // Import the helper function from deployments.ts
+    const { triggerGitHubAction } = await import('../routes/deployments.js');
+
+    // Trigger a preview deployment
+    await triggerGitHubAction('preview', id, 'Release Closure');
+  } catch (error) {
+    console.error('Error triggering deployment:', error);
+  }
 
   return c.json(updatedRelease[0]);
 });

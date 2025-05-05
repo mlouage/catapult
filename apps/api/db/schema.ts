@@ -5,6 +5,8 @@ import type { EntryPayload } from './EntryPayload.js';
 export const catapult = pgSchema("catapult");
 
 export const releaseStatusEnum = catapult.enum('release_status', ['open', 'closed']);
+export const deploymentStatusEnum = catapult.enum('deployment_status', ['completed', 'failed', 'in_progress']);
+export const environmentEnum = catapult.enum('environment', ['preview', 'production']);
 
 export const releasesTable = catapult.table('releases', {
   id: serial('id').primaryKey(),
@@ -15,8 +17,20 @@ export const releasesTable = catapult.table('releases', {
   closedAt: timestamp('closed_at', { withTimezone: true, mode: 'date' }),
 });
 
+export const deploymentsTable = catapult.table('deployments', {
+  id: serial('id').primaryKey(),
+  name: text('name').notNull(),
+  status: deploymentStatusEnum('status').notNull(),
+  environment: environmentEnum('environment').notNull(),
+  githubActionUrl: text('github_action_url').notNull(),
+  triggeredBy: text('triggered_by').notNull(),
+  deployedAt: timestamp('deployed_at', { withTimezone: true, mode: 'date' }).defaultNow().notNull(),
+  releaseId: integer('release_id').references(() => releasesTable.id, { onDelete: 'set null' }),
+});
+
 export const releasesRelations = relations(releasesTable, ({ many }) => ({
   webhooks: many(eventsTable),
+  deployments: many(deploymentsTable),
 }));
 
 export const eventsTable = catapult.table('events', {
@@ -55,4 +69,7 @@ export const schema = {
   releasesRelations,
   eventsTable,
   strapiWebhooksRelations,
+  deploymentStatusEnum,
+  environmentEnum,
+  deploymentsTable,
 };

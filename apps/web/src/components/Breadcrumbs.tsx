@@ -1,12 +1,11 @@
 import { HomeIcon } from '@heroicons/react/20/solid'
-import { NavLink, useLocation, useParams } from 'react-router-dom'
+import { NavLink, useLocation } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import { useProtectedApi } from '../hooks/useProtectedApi'
 import { useMsal } from '@azure/msal-react'
 
 export default function Breadcrumbs() {
     const location = useLocation();
-    const params = useParams();
     const { accounts } = useMsal();
     const { data: entryData, fetchData } = useProtectedApi();
     const [releaseId, setReleaseId] = useState<number | null>(null);
@@ -160,7 +159,7 @@ export default function Breadcrumbs() {
     }
 
     return (
-        <nav aria-label="Breadcrumb" className="flex border-b border-gray-200 bg-white mb-8">
+        <nav aria-label="Breadcrumb" className="flex items-left mb-8">
             <ol role="list" className="mx-auto flex w-full max-w-(--breakpoint-xl) space-x-4 px-4 sm:px-6 lg:px-8">
                 <li className="flex">
                     <div className="flex items-center">
@@ -173,14 +172,8 @@ export default function Breadcrumbs() {
                 {breadcrumbs.map((crumb) => (
                     <li key={crumb.name} className="flex">
                         <div className="flex items-center">
-                            <svg
-                                fill="currentColor"
-                                viewBox="0 0 24 44"
-                                preserveAspectRatio="none"
-                                aria-hidden="true"
-                                className="h-full w-6 shrink-0 text-gray-200"
-                            >
-                                <path d="M.293 0l22 22-22 22h1.414l22-22-22-22H.293z" />
+                            <svg fill="currentColor" viewBox="0 0 20 20" aria-hidden="true" className="size-5 shrink-0 text-gray-300">
+                                <path d="M5.555 17.776l8-16 .894.448-8 16-.894-.448z" />
                             </svg>
                             <NavLink
                                 to={crumb.path}
