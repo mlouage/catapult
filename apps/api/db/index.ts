@@ -7,7 +7,6 @@ const dbPassword = process.env.DB_PASSWORD || process.env.CATAPULTPASSWORD;
 const dbHost = process.env.DB_HOST || process.env.SERVER;
 const dbPort = process.env.DB_PORT || '5432';
 const dbName = process.env.DB_NAME || process.env.CATAPULTDATABASENAME;
-const dbSchema = process.env.DB_SCHEMA || 'catapult'; // Keep schema variable
 
 if (!dbUser || !dbPassword || !dbHost || !dbName) {
   throw new Error('Missing required database environment variables (DB_USER, DB_PASSWORD, DB_HOST, DB_NAME)');

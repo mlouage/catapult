@@ -1,0 +1,18 @@
+services:
+  catapult-app:
+    image: catapult-app:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:80"
+    env_file:
+      - apps/api/.env
+    environment:
+      - NODE_ENV=production
+      - SERVER=host.docker.internal
+    networks:
+      - catapult-network
+networks:
+  catapult-network:
+    driver: bridge

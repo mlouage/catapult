@@ -2,6 +2,7 @@ import { drizzle } from 'drizzle-orm/postgres-js';
 import { migrate } from 'drizzle-orm/postgres-js/migrator';
 import postgres from 'postgres';
 import * as dotenv from 'dotenv';
+import { schema } from "./schema.js";
 
 dotenv.config({ path: '.env' });
 
@@ -10,7 +11,6 @@ const dbPassword = process.env.DB_PASSWORD || process.env.CATAPULTPASSWORD;
 const dbHost = process.env.DB_HOST || process.env.SERVER;
 const dbPort = process.env.DB_PORT || '5432';
 const dbName = process.env.DB_NAME || process.env.CATAPULTDATABASENAME;
-const dbSchema = process.env.DB_SCHEMA || 'catapult';
 
 if (!dbUser || !dbPassword || !dbHost || !dbName) {
     throw new Error('Missing required database environment variables (DB_USER, DB_PASSWORD, DB_HOST, DB_NAME)');
@@ -28,7 +28,7 @@ const runMigrate = async () => {
       max: 1,
   });
   
-  const migrationDb = drizzle(migrationConnection);
+  const migrationDb = drizzle(migrationConnection, { schema });
 
   try {
     await migrate(migrationDb, { migrationsFolder: './drizzle' });
