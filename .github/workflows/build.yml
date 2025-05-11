@@ -1,0 +1,54 @@
+name: Build and Push Docker Image
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Login to Gitea
+        env:
+          USERNAME: ${{ vars.GITEA_USERNAME }}
+          PASSWORD: ${{ secrets.GITEA_PASSWORD }}
+        run: |
+          echo "Login to Gitea"
+          echo $PASSWORD | docker login git.louage.net -u $USERNAME --password-stdin
+
+      - name: Create .env for web
+        run: |
+          echo "VITE_AZURE_AD_TENANT_ID=${{ vars.AZURE_AD_TENANT_ID }}" > apps/web/.env
+          echo "VITE_AZURE_AD_CLIENT_ID= ${{ vars.AZURE_AD_CLIENT_ID }}" >> apps/web/.env
+          echo "VITE_AZURE_AD_REDIRECT_URI=${{ vars.AZURE_AD_REDIRECT_URI }}" >> apps/web/.env
+          echo "VITE_AZURE_AD_BACKEND_SCOPE=${{ vars.AZURE_AD_BACKEND_SCOPE }}" >> apps/web/.env
+          echo "VITE_CMS_WEB_URL=${{ vars.CMS_WEB_URL }}" >> apps/web/.env
+
+      - name: Create .env for api
+        run: |
+          echo "AZURE_AD_TENANT_ID=${{ vars.AZURE_AD_TENANT_ID }}" > apps/api/.env
+          echo "AZURE_AD_BACKEND_AUDIENCE= ${{ vars.AZURE_AD_BACKEND_AUDIENCE }}" >> apps/api/.env
+          echo "STRAPI_WEBHOOK_SECRET=${{ secrets.STRAPI_WEBHOOK_SECRET }}" >> apps/api/.env
+          echo "SERVER=${{ vars.SERVER }}" >> apps/api/.env
+          echo "ADMINUSER=${{ vars.ADMINUSER }}" >> apps/api/.env
+          echo "ADMINPASSWORD=${{ secrets.ADMINPASSWORD }}" >> apps/api/.env
+          echo "CATAPULTUSER=${{ vars.CATAPULTUSER }}" >> apps/api/.env
+          echo "CATAPULTPASSWORD=${{ secrets.CATAPULTPASSWORD }}" >> apps/api/.env
+          echo "CATAPULTDATABASENAME=${{ vars.CATAPULTDATABASENAME }}" >> apps/api/.env
+          echo "SSL=${{ vars.SSL }}" >> apps/api/.env
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and push the image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: git.louage.net/maarten/${{ vars.GITEA_IMAGE_NAME }}
