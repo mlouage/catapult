@@ -1,12 +1,14 @@
 name: Build and Push Docker Image
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - main
 
 jobs:
   build-and-push:
+    environment: home
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
